@@ -1,0 +1,90 @@
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
+
+public class FileHandler {
+	
+	private Color [][] pixels;
+	private int width;
+	private int height;
+	
+
+	public FileHandler(String filename) {
+		BufferedImage image = null;
+	    try {
+	    	image = ImageIO.read(new File(filename+".jpg"));
+		    this.height = image.getHeight();
+		    this.width = image.getWidth();
+		    pixels = new Color[height][width];
+		    setPixels(image);
+		    } catch (IOException e) {
+		    	System.err.println(e.getMessage());
+		    }
+	    }
+	
+	public Color[][] getPixels(){
+		return this.pixels;
+	}
+	
+	public int getHeight() {
+		return this.height;
+	}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public void saveNewImage(Color[][] newPixels){
+		BufferedImage image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.width; j++) {
+				image.setRGB(j,i,newPixels[i][j].getRGB());
+			}
+		}
+		File outputfile = new File("saved.jpg");
+		try {
+			ImageIO.write(image, "jpg", outputfile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public List<Integer> getRGB(int x, int y) {
+		Color pixel = pixels[x][y];
+		int r = pixel.getRed();
+		int g = pixel.getGreen();
+		int b = pixel.getBlue();		
+		List<Integer> RGB = new ArrayList<Integer>(Arrays.asList(r,g,b));
+		return RGB;
+	}
+	
+	private void setPixels(BufferedImage image) {
+		int width = image.getWidth();
+		int height = image.getHeight();
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				Color color = new Color(image.getRGB(j,i));
+				pixels[i][j] = color;
+			}
+		}
+		for (int i = 0; i < image.getHeight(); i++) {
+			System.out.println("Row "+i);
+			for (int j = 0; j < image.getWidth(); j++) {
+				System.out.println(pixels[i][j].toString());
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		FileHandler fh = new FileHandler("Test_image");
+	}
+
+}
