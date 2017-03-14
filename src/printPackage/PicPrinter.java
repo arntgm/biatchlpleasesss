@@ -2,7 +2,6 @@ package printPackage;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -10,11 +9,11 @@ import mst.FileHandler;
 
 public class PicPrinter {
 	
-	private List<Integer> neighborList;
+	private Integer[] neighborArray;
 	private FileHandler fh;
 	
-	public PicPrinter(List<Integer> neighborList, FileHandler fh) {
-		this.neighborList = neighborList;
+	public PicPrinter(Integer[] neighborArray, FileHandler fh) {
+		this.neighborArray = neighborArray;
 		this.fh = fh;
 		run();
 	}
@@ -76,11 +75,11 @@ public class PicPrinter {
 		List<Integer> visited = new ArrayList<Integer>();
 		int next = 0;
 		int old;
-		while (visited.size() < neighborList.size()) {
+		while (visited.size() < neighborArray.length) {
 			segment.add(next);
 			visited.add(next);
 			old = next;
-			next = neighborList.get(old);
+			next = neighborArray[old];
 			if (segment.contains(next)) {
 				segments.add(new ArrayList<Integer>(segment));
 				segment.clear();
@@ -98,12 +97,12 @@ public class PicPrinter {
 	
 	private int setNext(List<Integer> visited) {
 		int next;
-		if (visited.size() == neighborList.size()) {
+		if (visited.size() == neighborArray.length) {
 			next = 0;
 		} else {
-			next = ThreadLocalRandom.current().nextInt(0,neighborList.size());
+			next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
 			while (visited.contains(next)) {
-				next = ThreadLocalRandom.current().nextInt(0,neighborList.size());
+				next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
 			}
 		}
 		return next;
@@ -122,7 +121,7 @@ public class PicPrinter {
 	
 //	public static void main(String[] args) {
 //		FileHandler fh = new FileHandler("mini");
-//		List<Integer> n = new ArrayList<Integer>(Arrays.asList(1,2,3,8,3,6,7,12,13,4,15,10,11,14,9,16,17,18,19,24,20,20,21,22,23));
+//		Integer[] n = {1,2,3,8,3,6,7,12,13,4,15,10,11,14,9,16,17,18,19,24,20,20,21,22,23};
 //		PicPrinter pp = new PicPrinter(n, fh);
 //	}
 }
