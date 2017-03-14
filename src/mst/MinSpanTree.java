@@ -137,8 +137,8 @@ public class MinSpanTree {
 		//System.out.println(g);
 		//System.out.println(mst.vertGrid[0][0].getCoords());
 		Graph.CostPathPair<Integer> primMST = Prims.getMinimumSpanningTree(g, mst.vertGrid[0][0]);
-		System.out.println("tree");
-		System.out.println(primMST);
+//		System.out.println("tree");
+//		System.out.println(primMST);
 //		
 	}
 }
