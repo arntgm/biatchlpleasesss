@@ -6,14 +6,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SegmentHandler {
 	
-	private Integer[] neighborArray;
+	private int[] neighborArray;
 	private List<List<Integer>> segments;
 	
-	public SegmentHandler(Integer[] neighborArray) {
+	public SegmentHandler(int[] neighborArray) {
 		this.neighborArray = neighborArray;
 	}
 	
-	public void updateNeighborArray(Integer[] neighborArray) {
+	public void updateNeighborArray(int[] neighborArray) {
 		this.neighborArray = neighborArray;
 	}
 	

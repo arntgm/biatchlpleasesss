@@ -27,7 +27,7 @@ public class PicPrinter {
 	}
 	
 	
-	private void generateImage(List<List<Integer>> segments, FileHandler fh) {
+	public void generateImage(List<List<Integer>> segments, FileHandler fh) {
 		Color[][] pixels = fh.getPixels();
 		int height = fh.getHeight();
 		int width = fh.getWidth();
