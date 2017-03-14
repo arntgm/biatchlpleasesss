@@ -1,25 +1,19 @@
 package mst;
-import mst.Graph;
 import mst.Graph.Edge;
 import mst.Graph.Vertex;
 import mst.Prims;
-
-import java.awt.Color;
-import java.awt.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-
-import javax.swing.text.StyledEditorKit.ForegroundAction;
-
 import mst.FileHandler;
 
+@SuppressWarnings("unchecked")
 public class MinSpanTree {
-	
 	//private int[] tree;
-	private Collection edges;
-	private Collection verts;
-	private Vertex[][] vertGrid;
+	private Collection<Edge<Integer>> edges;
+	private Collection<Vertex<Integer>> verts;
+	private Vertex<Integer>[][] vertGrid;
 	private int width;
 	private int height;
 	//private String[] objectives;
@@ -42,11 +36,9 @@ public class MinSpanTree {
 		ArrayList<Vertex<Integer>> coll = new ArrayList<Vertex<Integer>>();
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
-				Vertex v = new Vertex(vCount);
-				vCount++;
-				v.setColor(fh.getRGB(i, j));
-				v.setCoords(i, j);
+				Vertex<Integer> v = new Vertex<Integer>(vCount, i, j,fh.getRGB(i, j) );
 				coll.add(v);
+				vCount++;
 				this.vertGrid[i][j] = v;
 			}
 		}
@@ -56,7 +48,7 @@ public class MinSpanTree {
 	
 	public Collection<Edge<Integer>> addEdges(){
 		ArrayList<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
-		//add edges to each vertex
+//		//add edges to each vertex
 //		for (Iterator iterator = this.verts.iterator(); iterator.hasNext();) {
 //			Vertex v = (Vertex) iterator.next();
 //			Vertex[] neighbors = getNeighbors(v);
@@ -73,15 +65,18 @@ public class MinSpanTree {
 //		}
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
-				Vertex v = this.vertGrid[i][j];
-				Vertex[] neighbors = getNeighbors(v);
+				if(i == this.height && j == this.width)
+					break;
+				Vertex<Integer> v = this.vertGrid[i][j];
+				Vertex<Integer>[] neighbors = getNeighbors(i, j);
 				for (int m = 0; m < neighbors.length; m++) {
 				//add edge
-					Vertex neighbor = neighbors[m];
+					Vertex<Integer> neighbor = neighbors[m];
 					if(neighbor != null){
 						float cost = utils.Euclidian.getRGBEuclid(v.getColor(), neighbor.getColor());
-						Edge e = new Edge(cost, v, neighbor);
+						Edge<Integer> e = new Edge<Integer>(cost, v, neighbor);
 						v.addEdge(e);
+						neighbor.addEdge(e);
 						edges.add(e);
 					}
 				}
@@ -91,11 +86,12 @@ public class MinSpanTree {
 		return edges;
 	}
 	
-	private Vertex[] getNeighbors(Vertex v){
-		Vertex[] neighbors = new Vertex[2];
-		int[] coords = v.getCoords();
-		int x = coords[0];
-		int y = coords[1];
+	public Collection<Edge<Integer>> getMSTPath(){
+		return Prims.getMSTPath(this.verts, this.edges, (Vertex<Integer>)this.verts.iterator().next());
+	}
+	
+	private Vertex<Integer>[] getNeighbors(int x, int y){
+		Vertex<Integer>[] neighbors = new Vertex[2];
 		//System.out.println(y);
 		//try north neighbor
 //		if(x > 0){
@@ -124,21 +120,36 @@ public class MinSpanTree {
 		return neighbors;
 	}
 	
+	public int[] getGenes(Collection<Edge<Integer>> mstPath){
+		int[] gene = new int[this.height*this.width];
+		Arrays.fill(gene, -1);
+		for (Iterator<Edge<Integer>> iterator = mstPath.iterator(); iterator.hasNext();) {
+			Edge<Integer> edge = (Edge<Integer>) iterator.next();
+			int index = (int)edge.getFromVertex().getValue();
+			gene[index] = (int)edge.getToVertex().getValue();
+		}
+		return gene;
+	}
+	
+	
 	public static void main(String[] args) {
 		String filename = "mini";
 		MinSpanTree mst = new MinSpanTree(filename);
-		//Prims prim = new Prims();
-		Graph g = new Graph(mst.verts, mst.edges);
-		System.out.println(g.getEdges());
-//		for (Iterator iterator = mst.verts.iterator(); iterator.hasNext();) {
-//			Vertex v = (Vertex) iterator.next();
-//			System.out.println(v.getColor().getGreen());
-//		}
-		//System.out.println(g);
-		//System.out.println(mst.vertGrid[0][0].getCoords());
-		Graph.CostPathPair<Integer> primMST = Prims.getMinimumSpanningTree(g, mst.vertGrid[0][0]);
-//		System.out.println("tree");
-//		System.out.println(primMST);
-//		
+		System.out.println(mst.verts.size());
+		System.out.println(mst.edges.size());
+		for (Iterator<Vertex<Integer>> iterator = mst.verts.iterator(); iterator.hasNext();) {
+			Vertex<Integer> v = (Vertex<Integer>) iterator.next();
+			System.out.println(v.getEdges());
+		}
+		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
+		System.out.println(MST.size());
+		for (Iterator<Edge<Integer>> iterator = MST.iterator(); iterator.hasNext();) {
+			Edge<Integer> edge = (Edge<Integer>) iterator.next();
+			System.out.println(edge);
+		}
+		int[] genes = mst.getGenes(MST);
+		for (int i = 0; i < genes.length; i++) {
+			System.out.println(genes[i]);
+		}
 	}
 }
