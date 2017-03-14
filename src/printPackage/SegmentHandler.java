@@ -31,6 +31,7 @@ public class SegmentHandler {
 
 	
 	private List<List<Integer>> calculateSegments() {
+		System.out.println("Calculating segments");
 		List<List<Integer>> segments = new ArrayList<List<Integer>>();
 		List<Integer> segment = new ArrayList<Integer>();
 		List<Integer> visited = new ArrayList<Integer>();
@@ -69,6 +70,9 @@ public class SegmentHandler {
 	
 	private int setNext(List<Integer> unvisited) {
 		int next;
+		if (unvisited.isEmpty()) {
+			return 0;
+		}
 		int r = rand.nextInt(unvisited.size());
 		next = unvisited.get(r);
 //		if (visited.size() == neighborArray.length) {
