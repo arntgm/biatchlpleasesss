@@ -2,15 +2,18 @@ package printPackage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SegmentHandler {
 	
 	private int[] neighborArray;
 	private List<List<Integer>> segments;
+	private Random rand;
 	
 	public SegmentHandler(int[] neighborArray) {
 		this.neighborArray = neighborArray;
+		rand = new Random();
 	}
 	
 	public void updateNeighborArray(int[] neighborArray) {
@@ -31,38 +34,51 @@ public class SegmentHandler {
 		List<List<Integer>> segments = new ArrayList<List<Integer>>();
 		List<Integer> segment = new ArrayList<Integer>();
 		List<Integer> visited = new ArrayList<Integer>();
+		List<Integer> unvisited = new ArrayList<Integer>();
+		for (int i = 0; i < neighborArray.length; i++) {
+			unvisited.add(i);
+		}
 		int next = 0;
 		int old;
+		boolean a;
 		while (visited.size() < neighborArray.length) {
 			segment.add(next);
+			for (int i = 0; i < unvisited.size(); i++) {
+				if (unvisited.get(i) == next) {
+					unvisited.remove(i);
+					break;
+				}
+			}
 			visited.add(next);
 			old = next;
 			next = neighborArray[old];
 			if (segment.contains(next)) {
 				segments.add(new ArrayList<Integer>(segment));
 				segment.clear();
-				next = setNext(visited);
+				next = setNext(unvisited);
 				}
 			else if (visited.contains(next)) {
 				mergeSegments(segments, segment, next);
 				segment.clear();
-				next = setNext(visited);
+				next = setNext(unvisited);
 			}
 		}
 		System.out.println(segments);
 		return segments;
 	}
 	
-	private int setNext(List<Integer> visited) {
+	private int setNext(List<Integer> unvisited) {
 		int next;
-		if (visited.size() == neighborArray.length) {
-			next = 0;
-		} else {
-			next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
-			while (visited.contains(next)) {
-				next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
-			}
-		}
+		int r = rand.nextInt(unvisited.size());
+		next = unvisited.get(r);
+//		if (visited.size() == neighborArray.length) {
+//			next = 0;
+//		} else {
+//			next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
+//			while (visited.contains(next)) {
+//				next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
+//			}
+//		}
 		return next;
 	}
 	
