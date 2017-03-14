@@ -2,16 +2,18 @@ package printPackage;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
 import mst.FileHandler;
 
 public class PicPrinter {
 	
-	private ArrayList<Integer> neighborList;
+	private List<Integer> neighborList;
 	private FileHandler fh;
 	
-	public PicPrinter(ArrayList<Integer> neighborList, FileHandler fh) {
+	public PicPrinter(List<Integer> neighborList, FileHandler fh) {
 		this.neighborList = neighborList;
 		this.fh = fh;
 		run();
@@ -26,6 +28,8 @@ public class PicPrinter {
 		Color[][] pixels = fh.getPixels();
 		int height = fh.getHeight();
 		int width = fh.getWidth();
+		System.out.println(height);
+		System.out.println(width);
 		int t = 0;
 		Color green = new Color(0, 255, 0);
 		for (int i = 0; i < height; i++) {
@@ -51,6 +55,7 @@ public class PicPrinter {
 						pixels[i][j] = green;
 					}
 				}
+				t += 1;
 			}
 		}
 		fh.saveNewImage(pixels);
@@ -87,6 +92,7 @@ public class PicPrinter {
 				next = setNext(visited);
 			}
 		}
+		System.out.println(segments);
 		return segments;
 	}
 	
@@ -114,6 +120,9 @@ public class PicPrinter {
 		}
 	}
 	
-	public static void main(String[] args) {
-	}
+//	public static void main(String[] args) {
+//		FileHandler fh = new FileHandler("mini");
+//		List<Integer> n = new ArrayList<Integer>(Arrays.asList(1,2,3,8,3,6,7,12,13,4,15,10,11,14,9,16,17,18,19,24,20,20,21,22,23));
+//		PicPrinter pp = new PicPrinter(n, fh);
+//	}
 }
