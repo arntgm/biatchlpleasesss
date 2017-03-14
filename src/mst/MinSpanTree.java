@@ -2,6 +2,9 @@ package mst;
 import mst.Graph.Edge;
 import mst.Graph.Vertex;
 import mst.Prims;
+import printPackage.PicPrinter;
+import printPackage.SegmentHandler;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +51,8 @@ public class MinSpanTree {
 			int[]newGene = copyGene(origGene);
 			for (int j = 0; j < i; j++) {
 				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j);
-				newGene[removeEdge.getFromVertex().getValue()] = -1;
+				int index = removeEdge.getFromVertex().getValue();
+				newGene[index] = index;
 			}
 			geneList.add(newGene);
 		}
@@ -167,6 +171,7 @@ public class MinSpanTree {
 	
 	public static void main(String[] args) {
 		String filename = "Test_image";
+		
 		FileHandler fh = new FileHandler(filename);
 		MinSpanTree mst = new MinSpanTree(filename, fh);
 //		System.out.println(mst.verts.size());
@@ -177,10 +182,10 @@ public class MinSpanTree {
 //		}
 		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
 		System.out.println(MST.size());
-		for (Iterator<Edge<Integer>> iterator = MST.iterator(); iterator.hasNext();) {
-			Edge<Integer> edge = (Edge<Integer>) iterator.next();
-			System.out.println(edge);
-		}
+//		for (Iterator<Edge<Integer>> iterator = MST.iterator(); iterator.hasNext();) {
+//			Edge<Integer> edge = (Edge<Integer>) iterator.next();
+//			System.out.println(edge);
+//		}
 		int[] genes = mst.getGenes(MST);
 		System.out.println(genes.length);
 //		for (int i = 0; i < genes.length; i++) {
@@ -188,6 +193,11 @@ public class MinSpanTree {
 //		}
 //		System.out.println("next");
 		List<int[]> pop = mst.generateChromosomes(4, MST, genes);
+		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1));
+		ss.updateSegments();
+		List<List<Integer>> seg = ss.getSegments();
+		PicPrinter pp = new PicPrinter(seg, fh);
+		pp.generateImage(seg, fh);
 //		for(int[] chromo : pop){
 //			for (int i = 0; i < chromo.length; i++) {
 //				System.out.print(chromo[i]+" ");
