@@ -25,7 +25,7 @@ public List<Chromosome> dominationList;
 		this.crowdDist += crowdDist;
 	}
 	
-	public void setValue(double value, String objective) {
+	private void setValue(double value, String objective) {
 		if (objective.equals("devi")) {
 			devi = value;
 		} else if (objective.equals("edge")) {
@@ -33,6 +33,26 @@ public List<Chromosome> dominationList;
 		} else if (objective.equals("conn")) {
 			conn = value;
 		}
+	}
+	
+	public void updateObjectiveValues() {
+		updateDevi();
+		updateEdge();
+		updateConn();
+	}
+	
+	private void updateConn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void updateEdge() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void updateDevi() {
+		
 	}
 	
 	public double getObjectiveValue(String objective) {

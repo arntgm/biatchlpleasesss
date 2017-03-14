@@ -1,63 +1,28 @@
 package printPackage;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import mst.FileHandler;
-
-public class PicPrinter {
+public class SegmentHandler {
 	
 	private Integer[] neighborArray;
-	private FileHandler fh;
+	private List<List<Integer>> segments;
 	
-	public PicPrinter(Integer[] neighborArray, FileHandler fh) {
+	public SegmentHandler(Integer[] neighborArray) {
 		this.neighborArray = neighborArray;
-		this.fh = fh;
-		run();
 	}
 	
-	private void run() {
-		List<List<Integer>> segments = setSegments();
-		generateImage(segments, fh);
+	public void updateNeighborArray(Integer[] neighborArray) {
+		this.neighborArray = neighborArray;
 	}
 	
-	private void generateImage(List<List<Integer>> segments, FileHandler fh) {
-		Color[][] pixels = fh.getPixels();
-		int height = fh.getHeight();
-		int width = fh.getWidth();
-		System.out.println(height);
-		System.out.println(width);
-		int t = 0;
-		Color green = new Color(0, 255, 0);
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				List<Integer> segment = getSegment(segments, t);
-				if (i != 0) {
-					if (! segment.contains(t-width)) {
-						pixels[i][j] = green;
-					}
-				}
-				if (i != height-1) {
-					if (! segment.contains(t+width)) {
-						pixels[i][j] = green;
-					}
-				}
-				if (j != 0) {
-					if (! segment.contains(t-1)) {
-						pixels[i][j] = green;
-					}
-				}
-				if (j != width - 1) {
-					if (! segment.contains(t+1)) {
-						pixels[i][j] = green;
-					}
-				}
-				t += 1;
-			}
-		}
-		fh.saveNewImage(pixels);
+	public void updateSegments() {
+		segments = calculateSegments();
+	}
+	
+	public List<List<Integer>> getSegments() {
+		return segments;
 	}
 	
 	private List<Integer> getSegment(List<List<Integer>> segments, int t) {
@@ -69,7 +34,7 @@ public class PicPrinter {
 		return new ArrayList<Integer>();
 	}
 	
-	private List<List<Integer>> setSegments() {
+	private List<List<Integer>> calculateSegments() {
 		List<List<Integer>> segments = new ArrayList<List<Integer>>();
 		List<Integer> segment = new ArrayList<Integer>();
 		List<Integer> visited = new ArrayList<Integer>();
@@ -117,11 +82,5 @@ public class PicPrinter {
 				return;
 			}
 		}
-	}
-	
-	public static void main(String[] args) {
-		FileHandler fh = new FileHandler("mini");
-		Integer[] n = {1,2,3,8,4,6,7,12,13,4,15,10,11,14,9,16,17,18,19,24,20,20,21,22,23};
-		PicPrinter pp = new PicPrinter(n, fh);
 	}
 }
