@@ -25,14 +25,7 @@ public class SegmentHandler {
 		return segments;
 	}
 	
-	private List<Integer> getSegment(List<List<Integer>> segments, int t) {
-		for (List<Integer> segment : segments) {
-			if (segment.contains(t)) {
-				return segment;
-			}
-		}
-		return new ArrayList<Integer>();
-	}
+
 	
 	private List<List<Integer>> calculateSegments() {
 		List<List<Integer>> segments = new ArrayList<List<Integer>>();

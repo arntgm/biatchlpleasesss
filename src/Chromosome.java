@@ -1,9 +1,11 @@
-import java.awt.Color;
-import java.util.ArrayList;
+import printPackage.SegmentHandler;
 import java.util.Comparator;
 import java.util.List;
 public class Chromosome implements Comparable<Chromosome> {
-	
+
+private Integer[] neighborArray;
+private List<List<Integer>> segments;
+private SegmentHandler sh;
 private double devi;
 private double edge;
 private double conn;
@@ -12,9 +14,12 @@ public int dominatedByCounter;
 public double crowdDist;
 public List<Chromosome> dominationList;
 	
-	public Chromosome(ArrayList<Color> image) {
-		//buildRandomChromosome();
-		crowdDist = 0;
+	public Chromosome(Integer[] neighborArray) {
+		this.neighborArray = neighborArray;
+		sh = new SegmentHandler(neighborArray);
+		sh.updateSegments();
+		this.segments = sh.getSegments();
+		updateObjectiveValues();
 	}
 	
 	public void setCrowdDist(double crowdDist) {
@@ -25,15 +30,15 @@ public List<Chromosome> dominationList;
 		this.crowdDist += crowdDist;
 	}
 	
-	private void setValue(double value, String objective) {
-		if (objective.equals("devi")) {
-			devi = value;
-		} else if (objective.equals("edge")) {
-			edge = value;
-		} else if (objective.equals("conn")) {
-			conn = value;
-		}
-	}
+//	private void setValue(double value, String objective) {
+//		if (objective.equals("devi")) {
+//			devi = value;
+//		} else if (objective.equals("edge")) {
+//			edge = value;
+//		} else if (objective.equals("conn")) {
+//			conn = value;
+//		}
+//	}
 	
 	public void updateObjectiveValues() {
 		updateDevi();
@@ -41,18 +46,16 @@ public List<Chromosome> dominationList;
 		updateConn();
 	}
 	
+	// TODO Create update methods, to initialize and update objective values.
 	private void updateConn() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	private void updateEdge() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	private void updateDevi() {
-		
 	}
 	
 	public double getObjectiveValue(String objective) {
