@@ -1,0 +1,53 @@
+package printpackage;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PicPrinter {
+	
+	private ArrayList<Integer> neighborList;
+	//private FileHandler fh;
+	
+	public PicPrinter(ArrayList<Integer> neighborList) {
+		this.neighborList = neighborList;
+		//this.fh = fh;
+		//run();
+	}
+	
+	private void run() {
+		List<List<Integer>> segments = new ArrayList<List<Integer>>();
+		List<Integer> visited = new ArrayList<Integer>();
+		List<Integer> segment = new ArrayList<Integer>();
+		int last;
+		int next = 0;
+		while (visited.size() < neighborList.size()) {
+			segment.add(next);
+			visited.add(next);
+			last = next;
+			next = neighborList.get(last);
+			if (segment.contains(next)) {
+				segments.add(segment);
+				segment.clear();
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		List<List<Integer>> segs = new ArrayList<List<Integer>>();
+		List<Integer> ints = new ArrayList<Integer>();
+		ints.add(2);
+		ints.add(5);
+		ints.add(7);
+		List<Integer> newList = new ArrayList<Integer>(ints);
+		segs.add(newList);
+		System.out.println(segs);
+		ints.clear();
+		ints.add(9);
+		ints.add(0);
+		newList = new ArrayList<Integer>(ints);
+		segs.add(newList);
+		System.out.println(segs);
+		System.out.println(segs.get(0).get(1));
+		System.out.println(segs.get(1).get(1));
+	}
+}
