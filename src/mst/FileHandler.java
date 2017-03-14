@@ -1,3 +1,4 @@
+package mst;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,6 +34,10 @@ public class FileHandler {
 		return this.pixels;
 	}
 	
+	public Color getRGB(int x, int y){
+		return this.pixels[x][y];
+	}
+	
 	public int getHeight() {
 		return this.height;
 	}
@@ -57,14 +62,6 @@ public class FileHandler {
 		}
 	}
 	
-	public List<Integer> getRGB(int x, int y) {
-		Color pixel = pixels[x][y];
-		int r = pixel.getRed();
-		int g = pixel.getGreen();
-		int b = pixel.getBlue();		
-		List<Integer> RGB = new ArrayList<Integer>(Arrays.asList(r,g,b));
-		return RGB;
-	}
 	
 	private void setPixels(BufferedImage image) {
 		int width = image.getWidth();
@@ -76,15 +73,16 @@ public class FileHandler {
 			}
 		}
 		for (int i = 0; i < image.getHeight(); i++) {
-			System.out.println("Row "+i);
+			//System.out.println("Row "+i);
 			for (int j = 0; j < image.getWidth(); j++) {
-				System.out.println(pixels[i][j].toString());
+				//System.out.println(pixels[i][j].toString());
 			}
 		}
 	}
 	
 	public static void main(String[] args) {
 		FileHandler fh = new FileHandler("Test_image");
+		System.out.println(fh.getHeight());
 	}
 
 }
