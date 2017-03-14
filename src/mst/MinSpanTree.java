@@ -4,16 +4,11 @@ import mst.Graph.Vertex;
 import mst.Prims;
 import printPackage.PicPrinter;
 import printPackage.SegmentHandler;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 import mst.FileHandler;
 
@@ -81,25 +76,9 @@ public class MinSpanTree {
 		}
 		return coll;
 	}
-	//create each vertex
 	
 	public Collection<Edge<Integer>> addEdges(){
 		ArrayList<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
-//		//add edges to each vertex
-//		for (Iterator iterator = this.verts.iterator(); iterator.hasNext();) {
-//			Vertex v = (Vertex) iterator.next();
-//			Vertex[] neighbors = getNeighbors(v);
-//			for (int i = 0; i < neighbors.length; i++) {
-//				//add edge
-//				Vertex neighbor = neighbors[i];
-//				if(neighbor != null){
-//					float cost = utils.Euclidian.getRGBEuclid(v.getColor(), neighbor.getColor());
-//					Edge e = new Edge(cost, v, neighbor);
-//					v.addEdge(e);
-//					edges.add(e);
-//				}
-//			}
-//		}
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
 				if(i == this.height && j == this.width)
@@ -118,7 +97,6 @@ public class MinSpanTree {
 					}
 				}
 			}
-			
 		}
 		return edges;
 	}
@@ -129,37 +107,24 @@ public class MinSpanTree {
 	
 	private Vertex<Integer>[] getNeighbors(int x, int y){
 		Vertex<Integer>[] neighbors = new Vertex[2];
-		//System.out.println(y);
-		//try north neighbor
-//		if(x > 0){
-//			neighbors[0] = this.vertGrid[x-1][y];
-//		}else{
-//			neighbors[0] = null;
-//		}
-		//try east neighbor
 		if(y < this.width-1){
 			neighbors[0] = this.vertGrid[x][y+1];
 		}else{
 			neighbors[0] = null;
 		}
-		//try south neighbor
 		if(x < this.height-1){
 			neighbors[1] = this.vertGrid[x+1][y];
 		}else{
 			neighbors[1] = null;
 		}
-//		//try west neighbor
-//		if(y > 0){
-//			neighbors[3] = this.vertGrid[x][y-1];
-//		}else{
-//			neighbors[3] = null;
-//		}
 		return neighbors;
 	}
 	
 	public int[] getGenes(Collection<Edge<Integer>> mstPath){
 		int[] gene = new int[this.height*this.width];
-		Arrays.fill(gene, -1);
+		for (int i = 0; i < gene.length; i++) {
+			gene[i] = i;
+		}
 		for (Iterator<Edge<Integer>> iterator = mstPath.iterator(); iterator.hasNext();) {
 			Edge<Integer> edge = (Edge<Integer>) iterator.next();
 			int index = (int)edge.getFromVertex().getValue();
@@ -192,7 +157,8 @@ public class MinSpanTree {
 //		System.out.print(genes[i]+" ");
 //		}
 //		System.out.println("next");
-		List<int[]> pop = mst.generateChromosomes(4, MST, genes);
+		List<int[]> pop = mst.generateChromosomes(9, MST, genes);
+		System.out.println("chromosomes generated");
 		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1));
 		ss.updateSegments();
 		List<List<Integer>> seg = ss.getSegments();
