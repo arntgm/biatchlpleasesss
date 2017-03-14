@@ -1,0 +1,107 @@
+package printpackage;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+public class PicPrinter {
+	
+	private ArrayList<Integer> neighborList;
+	//private FileHandler fh;
+	
+	public PicPrinter(ArrayList<Integer> neighborList) {
+		//this.neighborList = neighborList;
+		//this.fh = fh;
+		//run();
+	}
+	
+	private void run() {
+		List<List<Integer>> segments = setSegments();
+		generateImage(segments, fh);
+	}
+	
+	private void generateImage(List<List<Integer>> segments, FileHandler fh) {
+		Color[][] pixels = fh.pixels;
+		int height = fh.height;
+		int width = fh.width;
+		for (int i = 0; i < neighborList.size(); i++) {
+			int r = i/width;
+			int c = i%width;
+		}
+	}
+	
+	private List<List<Integer>> setSegments() {
+		List<List<Integer>> segments = new ArrayList<List<Integer>>();
+		List<Integer> segment = new ArrayList<Integer>();
+		List<Integer> visited = new ArrayList<Integer>();
+		int next = 0;
+		int old;
+		while (visited.size() < neighborList.size()) {
+			segment.add(next);
+			visited.add(next);
+			old = next;
+			next = neighborList.get(old);
+			if (segment.contains(next)) {
+				segments.add(new ArrayList<Integer>(segment));
+				segment.clear();
+				next = setNext(visited);
+				}
+			else if (visited.contains(next)) {
+				addToSegment(segments, segment, next);
+			}
+		}
+		return segments;
+	}
+	
+	private int setNext(List<Integer> visited) {
+		int next;
+		if (visited.size() == neighborList.size()) {
+			next = 0;
+		} else {
+			next = ThreadLocalRandom.current().nextInt(0,neighborList.size());
+			while (visited.contains(next)) {
+				next = ThreadLocalRandom.current().nextInt(0,neighborList.size());
+			}
+		}
+		return next;
+	}
+	
+	private void addToSegment(List<List<Integer>> segments, List<Integer> segment, int next) {
+		for (List<Integer> s : segments) {
+			if (s.contains(next)) {
+				for (Integer integer : segment) {
+					s.add(integer);
+				}
+				segment.clear();
+				return;
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		List<List<Integer>> segs = new ArrayList<List<Integer>>();
+		List<Integer> ints = new ArrayList<Integer>();
+		ints.add(2);
+		ints.add(5);
+		ints.add(7);
+		List<Integer> newList = new ArrayList<Integer>(ints);
+		segs.add(newList);
+		System.out.println(segs);
+		ints.clear();
+		ints.add(9);
+		ints.add(0);
+		segs.add(new ArrayList<Integer>());
+		for (Integer integer : ints) {
+			segs.get(1).add(integer);
+		}
+		//newList = new ArrayList<Integer>(ints);
+		//segs.add(newList);
+		ints.clear();
+		System.out.println(segs);
+		int r = 129/128;
+		int c = 129%128;
+		System.out.println(r);
+		System.out.println(c);
+	}
+}
