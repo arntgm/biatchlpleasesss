@@ -1,8 +1,10 @@
 package utils;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 public class Euclidian {
 	
@@ -14,6 +16,38 @@ public class Euclidian {
 		this.width = width;
 		this.height = height;
 		this.pixels = pixels;
+	}
+	
+	public List<Integer> getNeighborNumbers(Integer gene){
+		List<Integer> neighbors = new ArrayList<Integer>();
+		if (Math.floorDiv(gene, this.width)!= 0) {
+			neighbors.add(gene-this.width);
+		}
+		if (Math.floorDiv(gene, this.width)!=this.height-1) {
+			neighbors.add(gene+this.width);
+		}
+		if (gene%this.width!= 0) {
+			neighbors.add(gene-1);
+		}
+		if (gene%this.width!= this.width) {
+			neighbors.add(gene+1);
+		}
+		return neighbors;
+	}
+	
+	public HashSet<Integer> getEdgeSet(HashSet<Integer> segment){
+		HashSet<Integer> edgeGenes = new HashSet<Integer>();
+		for (Iterator<Integer> iterator = segment.iterator(); iterator.hasNext();) {
+			Integer gene = (Integer) iterator.next();
+			List<Integer> neighbors = getNeighborNumbers(gene);
+			for (Integer neighbor : neighbors) {
+				if (!segment.contains(neighbor)){
+					edgeGenes.add(gene);
+					break;
+				}
+			}
+		}
+		return edgeGenes;
 	}
 	
 	public static float getRGBEuclid(Color RGBone, Color RGBtwo){
@@ -51,7 +85,16 @@ public class Euclidian {
 		return new Color(RGBsums[0], RGBsums[1], RGBsums[2]);
 	}
 	
-	private int[] toGridCoords(int pos){
+	public static HashSet<Integer> getSegment(List<HashSet<Integer>> segments, int t) {
+		for (HashSet<Integer> segment : segments) {
+			if (segment.contains(t)) {
+				return segment;
+			}
+		}
+		return new HashSet<Integer>();
+	}
+	
+	public int[] toGridCoords(int pos){
 		int[] coords = new int[2];
 		coords[0] = Math.floorDiv(pos, this.width);
 		coords[1] = pos%this.width;

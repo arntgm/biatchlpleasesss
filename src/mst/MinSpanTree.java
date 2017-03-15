@@ -141,7 +141,7 @@ public class MinSpanTree {
 	}
 	
 	
-	private Vertex<Integer>[] getNeighbors(int x, int y){
+	public Vertex<Integer>[] getNeighbors(int x, int y){
 		Vertex<Integer>[] neighbors = new Vertex[2];
 		if(y < this.width-1){
 			neighbors[0] = this.vertGrid[x][y+1];
@@ -171,10 +171,12 @@ public class MinSpanTree {
 	
 	
 	public static void main(String[] args) {
-		String filename = "Test_image_2";
+		String filename = "Test_image";
 		
 		FileHandler fh = new FileHandler(filename);
 		MinSpanTree mst = new MinSpanTree(filename, fh);
+		Euclidian eu = new Euclidian(mst.width, mst.height, fh.getPixels());
+
 //		System.out.println(mst.verts.size());
 //		System.out.println(mst.edges.size());
 //		for (Iterator<Vertex<Integer>> iterator = mst.verts.iterator(); iterator.hasNext();) {
@@ -193,18 +195,19 @@ public class MinSpanTree {
 //		System.out.print(genes[i]+" ");
 //		}
 //		System.out.println("next");
-		List<int[]> pop = mst.generateChromosomes(40, MST, genes);
+		List<int[]> pop = mst.generateChromosomes(300, MST, genes);
 		System.out.println("chromosomes generated");
-		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1));
+		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1), fh, eu);
 		ss.updateSegments();
 		List<HashSet<Integer>> seg = ss.getSegments();
-		PicPrinter pp = new PicPrinter(seg, fh);
-		Euclidian eu = new Euclidian(mst.width, mst.height, fh.getPixels());
+		PicPrinter pp = new PicPrinter(seg, fh, eu);
+		ss.mergeWithThreshold(seg, 500);
 		Color centroid = eu.getRGBCentroid(seg.get(4));
 		System.out.println("centroid: "+centroid+", pixels: "+seg.get(4).size());
 		System.out.println("deviation: "+eu.getRGBdeviation(seg.get(4), centroid));
-		System.out.println("location: "+seg.get(4).iterator().next());
-		pp.generateImage(seg, fh);
+		System.out.println("# of segments: "+seg.size());
+//		System.out.println("location: "+seg.get(4).iterator().next());
+		pp.generateImage(seg);
 		ImageDrawer.drawImage("saved.jpg");
 //		for(int[] chromo : pop){
 //			for (int i = 0; i < chromo.length; i++) {
