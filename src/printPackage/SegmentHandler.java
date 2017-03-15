@@ -79,7 +79,7 @@ public class SegmentHandler {
 				}
 			else if (!unvisited.contains(next)) {
 				mergeSegments(segments,(HashSet<Integer>) segment, next);
-				segment.clear();
+				segment = new HashSet<Integer>();
 				next = setNext((HashSet<Integer>)unvisited);
 			}
 		}
