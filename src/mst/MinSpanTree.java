@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -161,11 +162,11 @@ public class MinSpanTree {
 //		System.out.print(genes[i]+" ");
 //		}
 //		System.out.println("next");
-		List<int[]> pop = mst.generateChromosomes(40, MST, genes);
+		List<int[]> pop = mst.generateChromosomes(17, MST, genes);
 		System.out.println("chromosomes generated");
 		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1));
 		ss.updateSegments();
-		List<List<Integer>> seg = ss.getSegments();
+		List<HashSet<Integer>> seg = ss.getSegments();
 		PicPrinter pp = new PicPrinter(seg, fh);
 		pp.generateImage(seg, fh);
 //		for(int[] chromo : pop){

@@ -2,8 +2,8 @@ package printPackage;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import mst.FileHandler;
 
@@ -12,34 +12,34 @@ public class PicPrinter {
 	private Integer[] neighborArray;
 	private FileHandler fh;
 	
-	public PicPrinter(List<List<Integer>> segments, FileHandler fh) {
+	public PicPrinter(List<HashSet<Integer>> segments, FileHandler fh) {
 		this.fh = fh;
 //		generateImage(segments, fh);
 	}
 	
-	private List<Integer> getSegment(List<List<Integer>> segments, int t) {
-		for (List<Integer> segment : segments) {
+	private HashSet<Integer> getSegment(List<HashSet<Integer>> segments, int t) {
+		for (HashSet<Integer> segment : segments) {
 			if (segment.contains(t)) {
 				return segment;
 			}
 		}
-		return new ArrayList<Integer>();
+		return new HashSet<Integer>();
 	}
 	
 	
-	public void generateImage(List<List<Integer>> segments, FileHandler fh) {
+	public void generateImage(List<HashSet<Integer>> segments, FileHandler fh) {
 		System.out.println("Generating image");
 		Color[][] pixels = fh.getPixels();
 		int height = fh.getHeight();
 		int width = fh.getWidth();
-		System.out.println(height);
-		System.out.println(width);
+//		System.out.println(height);
+//		System.out.println(width);
 		int t = 0;
 		Color green = new Color(0, 255, 0);
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				//@TODO: use HashSet for faster lookup on getSegment and contains
-				List<Integer> segment = getSegment(segments, t);
+				HashSet<Integer> segment = getSegment(segments, t);
 				if (i != 0) {
 					if (! segment.contains(t-width)) {
 						pixels[i][j] = green;
