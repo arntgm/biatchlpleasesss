@@ -45,7 +45,7 @@ public class MinSpanTree {
 	}
 	
 	
-	public List<int[]> generateChromosomes(int population, List<Edge<Integer>> origMSTPath, int[] origGene){
+	public List<int[]> generateGeneArrays(int population, int removeLimit, List<Edge<Integer>> origMSTPath, int[] origGene){
 //		origMSTPath.sort(new Comparator<Edge<Integer>());
 		List<int[]> geneList = new ArrayList<int[]>();
 //		Collections.sort(origMSTPath);
@@ -53,7 +53,7 @@ public class MinSpanTree {
 		
 		for (int i = 0; i < population; i++) {
 			int[]newGene = copyGene(origGene);
-			for (int j = 0; j < i; j++) {
+			for (int j = 0; j+i < removeLimit; j++) {
 //				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j); //expensive edge
 //				System.out.println(origMSTPath.size());
 				Edge<Integer>removeEdge = origMSTPath.remove(this.r.nextInt(origMSTPath.size())); //random edge
@@ -171,44 +171,7 @@ public class MinSpanTree {
 	
 	
 	public static void main(String[] args) {
-		String filename = "Test_image";
 		
-		FileHandler fh = new FileHandler(filename);
-		MinSpanTree mst = new MinSpanTree(filename, fh);
-		Euclidian eu = new Euclidian(mst.width, mst.height, fh.getPixels());
-
-//		System.out.println(mst.verts.size());
-//		System.out.println(mst.edges.size());
-//		for (Iterator<Vertex<Integer>> iterator = mst.verts.iterator(); iterator.hasNext();) {
-//			Vertex<Integer> v = (Vertex<Integer>) iterator.next();
-//			System.out.println(v.getEdges());
-//		}
-		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
-		System.out.println(MST.size());
-//		for (Iterator<Edge<Integer>> iterator = MST.iterator(); iterator.hasNext();) {
-//			Edge<Integer> edge = (Edge<Integer>) iterator.next();
-//			System.out.println(edge);
-//		}
-		int[] genes = mst.getGenes(MST);
-		System.out.println(genes.length);
-//		for (int i = 0; i < genes.length; i++) {
-//		System.out.print(genes[i]+" ");
-//		}
-//		System.out.println("next");
-		List<int[]> pop = mst.generateChromosomes(300, MST, genes);
-		System.out.println("chromosomes generated");
-		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1), fh, eu);
-//		ss.updateSegments();
-		List<HashSet<Integer>> seg = ss.calculateSegments();
-		PicPrinter pp = new PicPrinter(seg, fh, eu);
-		ss.mergeWithThreshold(seg, 500);
-		Color centroid = eu.getRGBCentroid(seg.get(4));
-		System.out.println("centroid: "+centroid+", pixels: "+seg.get(4).size());
-		System.out.println("deviation: "+eu.getRGBdeviation(seg.get(4), centroid));
-		System.out.println("# of segments: "+seg.size());
-//		System.out.println("location: "+seg.get(4).iterator().next());
-		pp.generateImage(seg);
-		ImageDrawer.drawImage("saved.jpg");
 //		for(int[] chromo : pop){
 //			for (int i = 0; i < chromo.length; i++) {
 //				System.out.print(chromo[i]+" ");
