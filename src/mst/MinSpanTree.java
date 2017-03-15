@@ -198,8 +198,8 @@ public class MinSpanTree {
 		List<int[]> pop = mst.generateChromosomes(300, MST, genes);
 		System.out.println("chromosomes generated");
 		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1), fh, eu);
-		ss.updateSegments();
-		List<HashSet<Integer>> seg = ss.getSegments();
+//		ss.updateSegments();
+		List<HashSet<Integer>> seg = ss.calculateSegments();
 		PicPrinter pp = new PicPrinter(seg, fh, eu);
 		ss.mergeWithThreshold(seg, 500);
 		Color centroid = eu.getRGBCentroid(seg.get(4));
