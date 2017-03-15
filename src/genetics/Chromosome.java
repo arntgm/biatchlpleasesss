@@ -11,20 +11,36 @@ import java.util.List;
 import java.util.Map;
 public class Chromosome implements Comparable<Chromosome> {
 
-private int[] neighborArray;
-private List<HashSet<Integer>> segments;
-private Map<HashSet<Integer>,HashSet<Integer>> edgeMap;
-private Map<HashSet<Integer>,Color> centroidMap;
-private SegmentHandler sh;
-private double devi;
-private double edge;
-private double conn;
-public int nonDomRank;
-public int dominatedByCounter;
-public double crowdDist;
-public List<Chromosome> dominationList;
-private Euclidian eu;
+	private int[] neighborArray;
+	private List<HashSet<Integer>> segments;
+	private HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap;
+	private Map<HashSet<Integer>,Color> centroidMap;
+	private SegmentHandler sh;
+	private double devi;
+	private double edge;
+	private double conn;
+	public int nonDomRank;
+	public int dominatedByCounter;
+	public double crowdDist;
+	public List<Chromosome> dominationList;
+	private Euclidian eu;
+		
+	public List<HashSet<Integer>> getSegments() {
+		return segments;
+	}
 	
+	public void setSegments(List<HashSet<Integer>> segments) {
+		this.segments = segments;
+	}
+	
+	public Map<HashSet<Integer>, Color> getCentroidMap() {
+		return centroidMap;
+	}
+	
+	public void setCentroidMap(Map<HashSet<Integer>, Color> centroidMap) {
+		this.centroidMap = centroidMap;
+	}
+
 	public Chromosome(int[] neighborArray, Euclidian eu, SegmentHandler sh) {
 		this.neighborArray = neighborArray;
 		this.eu = eu;
@@ -35,17 +51,18 @@ private Euclidian eu;
 		updateObjectiveValues();
 	}
 	
-	public void setEdgeMap(Map<HashSet<Integer>,HashSet<Integer>> edgeMap){
+	public void setEdgeMap(HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap){
 		this.edgeMap = edgeMap;
 	}
 	
-	public Map<HashSet<Integer>,HashSet<Integer>> getEdgeMap(){
+	public HashMap<HashSet<Integer>,HashSet<Integer>> getEdgeMap(){
 		return this.edgeMap;
 	}
 	
 	public void generateEdgeMap(){
 		for (Iterator<HashSet<Integer>> iterator = this.segments.iterator(); iterator.hasNext();) {
 			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
+//			System.out.println("new segment: "+segment.toString());
 			this.edgeMap.put(segment, eu.getEdgeSet(segment));
 		}
 	}

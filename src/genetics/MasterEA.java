@@ -5,8 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import mst.FileHandler;
@@ -24,9 +27,10 @@ public class MasterEA {
 	private MinSpanTree mst;
 	private Euclidian eu;
 	private PicPrinter pp;
+	private SegmentHandler sh;
 	private List<List<Chromosome>> chromoTiers;
 	private List<Chromosome> newPopulation;
-	private List<Chromosome> combinedPopulation;
+	private List<Chromosome> oldPopulation;
 	
 	private MasterEA(String filename) {
 		//this.fh = new FileHandler(filename);
@@ -35,6 +39,7 @@ public class MasterEA {
 		this.mst = new MinSpanTree(filename, fh);
 		this.eu = new Euclidian(fh.getWidth(), fh.getHeight(), fh.getPixels());
 		this.pp = new PicPrinter(fh, eu);
+		this.sh = new SegmentHandler(fh, eu);
 	}
 	
 //	private void init() {
@@ -134,47 +139,45 @@ public class MasterEA {
 		}
 	}
 	
-	public void run(int population, int removeLimit){
+	@SuppressWarnings("rawtypes")
+	private List<Chromosome> spawnChromosomes(List<int[]>pop, int threshold){
+		List<Chromosome> spawns = new ArrayList<Chromosome>();
+		for (int[] gene : pop) {
+			System.out.println("new chromo!");
+			Chromosome c = new Chromosome(gene, this.eu, this.sh);
+			c.generateEdgeMap();
+			Collection<HashSet<Integer>> edges = c.getEdgeMap().values();
+//			System.out.println("# of segments: "+c.getSegments().size());
+//			for (Iterator iterator = edges.iterator(); iterator.hasNext();) {
+//				HashSet<Integer> hashSet = (HashSet<Integer>) iterator.next();
+////				System.out.println(hashSet.toString());
+//			}
+			c.generateCentroidMap();
+			sh.mergeWithThreshold(c.getSegments(), c.getEdgeMap(), threshold);
+			System.out.println("heihå");
+			spawns.add(c);
+		}
+		return spawns;
+	}
+	
+	public void run(int population, int removeLimit, int minSegmentSize){
 		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
 		int[] genes = this.mst.getGenes(MST);
 		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
+		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
+		System.out.println("kjæm sæ sjø");
 		
-//		System.out.println(mst.verts.size());
-//		System.out.println(mst.edges.size());
-//		for (Iterator<Vertex<Integer>> iterator = mst.verts.iterator(); iterator.hasNext();) {
-//			Vertex<Integer> v = (Vertex<Integer>) iterator.next();
-//			System.out.println(v.getEdges());
-//		}
-//		for (Iterator<Edge<Integer>> iterator = MST.iterator(); iterator.hasNext();) {
-//			Edge<Integer> edge = (Edge<Integer>) iterator.next();
-//			System.out.println(edge);
-//		}
-		
-		System.out.println(genes.length);
-//		for (int i = 0; i < genes.length; i++) {
-//		System.out.print(genes[i]+" ");
-//		}
-//		System.out.println("next");
-		System.out.println("chromosomes generated");
-		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1), fh, eu);
-//		ss.updateSegments();
-		List<HashSet<Integer>> seg = ss.calculateSegments();
-		ss.mergeWithThreshold(seg, 500);
-		Color centroid = eu.getRGBCentroid(seg.get(4));
-		System.out.println("centroid: "+centroid+", pixels: "+seg.get(4).size());
-		System.out.println("deviation: "+eu.getRGBdeviation(seg.get(4), centroid));
-		System.out.println("# of segments: "+seg.size());
-//		System.out.println("location: "+seg.get(4).iterator().next());
-		pp.generateImage(seg);
+		pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
 		ImageDrawer.drawImage("saved.jpg");
 	}
 	
 	public static void main(String[] args) {
-		String filename = "Test_image";
-		int population = 50;
-		int mstRemoveLimit = 300;
+		String filename = "Test_image_2";
+		int population = 2;
+		int mstRemoveLimit = 40;
+		int minSegmentSize = 150;
 		MasterEA m = new MasterEA(filename);
-		m.run(population, mstRemoveLimit);
+		m.run(population, mstRemoveLimit, minSegmentSize);
 		//MasterEA master = new MasterEA("Test_image");
 	}
 }
