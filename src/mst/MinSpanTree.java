@@ -47,6 +47,7 @@ public class MinSpanTree {
 	
 	public List<int[]> generateGeneArrays(int population, int removeLimit, List<Edge<Integer>> origMSTPath, int[] origGene){
 //		origMSTPath.sort(new Comparator<Edge<Integer>());
+		System.out.println("Generating gene arrays");
 		List<int[]> geneList = new ArrayList<int[]>();
 //		Collections.sort(origMSTPath);
 //		edgeQ.addAll(origMST);

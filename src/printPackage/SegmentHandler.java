@@ -2,6 +2,7 @@ package printPackage;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +19,7 @@ public class SegmentHandler {
 	private Euclidian eu;
 	private Random r;
 	
-	public SegmentHandler(int[] neighborArray, FileHandler fh, Euclidian eu) {
+	public SegmentHandler(FileHandler fh, Euclidian eu) {
 //		this.neighborArray = neighborArray;
 		this.fh = fh;
 		this.eu = eu;
@@ -31,27 +32,46 @@ public class SegmentHandler {
 	
 	
 	
-	public void mergeWithThreshold(List<HashSet<Integer>> segments, HashSet<Integer> edges, int threshold){
+	public void mergeWithThreshold(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap, int threshold){
 		HashSet<HashSet<Integer>> removedSegments = new HashSet<HashSet<Integer>>();
+		
 		for (Iterator<HashSet<Integer>> iterator = segments.iterator(); iterator.hasNext();) {
-			HashSet<Integer> hashSet = (HashSet<Integer>) iterator.next();
-			if (hashSet.size() < threshold){
-				mergeToNeighbor(hashSet, segments, edges);
-				removedSegments.add(hashSet);
+			
+			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
+			
+			if (segment.size() < threshold){
+//				System.out.println("hei hei se her, segment: "+segment.toString());
+//				System.out.println("men finnes det i map? "+edgeMap.containsKey(segment));
+				mergeToNeighbor(segment, segments, edgeMap); //HashSet<Integer> changedSeg = 
+				removedSegments.add(segment);
 			}
 		}
 		segments.removeAll(removedSegments);
 	}
 	
-	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, HashSet<Integer> edges){
+	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap){
 //		HashSet<Integer> edges = eu.getEdgeSet(segment);
+//		System.out.println(segment.size());
+		HashSet<Integer> edges = edgeMap.get(segment);
+		edgeMap.remove(segment);
+		
+//		System.out.println("size of edges is: "+edges.size());
 		Integer pixel = edges.iterator().next(); //random edge for merging
 		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
 		HashSet<Integer> neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
+//		System.out.println("getSegment worked!");
 		while(neighborSeg == segment){
 			neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
 		}
-		neighborSeg.addAll(segment);
+		edgeMap.remove(neighborSeg);
+//		System.out.println("managed to randomiiiize");
+//		neighborSeg.addAll(segment);
+		for (Integer integer : segment) {
+			neighborSeg.add(integer);
+		}
+		edgeMap.put(neighborSeg, eu.getEdgeSet(neighborSeg));
+//		return neighborSeg;
+//		System.out.println("nuuuhvel");
 	}
 	
 	public List<HashSet<Integer>> calculateSegments(int[] neighborArray) {
