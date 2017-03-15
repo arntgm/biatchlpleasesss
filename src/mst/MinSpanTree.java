@@ -5,6 +5,9 @@ import mst.Prims;
 import printPackage.ImageDrawer;
 import printPackage.PicPrinter;
 import printPackage.SegmentHandler;
+import utils.Euclidian;
+
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -190,12 +193,17 @@ public class MinSpanTree {
 //		System.out.print(genes[i]+" ");
 //		}
 //		System.out.println("next");
-		List<int[]> pop = mst.generateChromosomes(35, MST, genes);
+		List<int[]> pop = mst.generateChromosomes(40, MST, genes);
 		System.out.println("chromosomes generated");
 		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1));
 		ss.updateSegments();
 		List<HashSet<Integer>> seg = ss.getSegments();
 		PicPrinter pp = new PicPrinter(seg, fh);
+		Euclidian eu = new Euclidian(mst.width, mst.height, fh.getPixels());
+		Color centroid = eu.getRGBCentroid(seg.get(4));
+		System.out.println("centroid: "+centroid+", pixels: "+seg.get(4).size());
+		System.out.println("deviation: "+eu.getRGBdeviation(seg.get(4), centroid));
+		System.out.println("location: "+seg.get(4).iterator().next());
 		pp.generateImage(seg, fh);
 		ImageDrawer.drawImage("saved.jpg");
 //		for(int[] chromo : pop){

@@ -1,7 +1,9 @@
 package printPackage;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +28,7 @@ public class SegmentHandler {
 		return segments;
 	}
 	
-
+	
 	
 	private List<HashSet<Integer>> calculateSegments() {
 		System.out.println("Calculating segments");
