@@ -1,12 +1,20 @@
 package genetics;
 import printPackage.SegmentHandler;
+import utils.Euclidian;
+
+import java.awt.Color;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 public class Chromosome implements Comparable<Chromosome> {
 
 private int[] neighborArray;
 private List<HashSet<Integer>> segments;
+private Map<HashSet<Integer>,HashSet<Integer>> edgeMap;
+private Map<HashSet<Integer>,Color> centroidMap;
 private SegmentHandler sh;
 private double devi;
 private double edge;
@@ -15,14 +23,40 @@ public int nonDomRank;
 public int dominatedByCounter;
 public double crowdDist;
 public List<Chromosome> dominationList;
+private Euclidian eu;
 	
-	public Chromosome(int[] neighborArray) {
+	public Chromosome(int[] neighborArray, Euclidian eu, SegmentHandler sh) {
 		this.neighborArray = neighborArray;
-		sh = new SegmentHandler(neighborArray);
-		sh.updateSegments();
-		this.segments = sh.getSegments();
+		this.eu = eu;
+		this.edgeMap = new HashMap<HashSet<Integer>, HashSet<Integer>>();
+		this.centroidMap = new HashMap<HashSet<Integer>, Color>();
+		this.sh = sh;
+		this.segments = sh.calculateSegments(this.neighborArray);
 		updateObjectiveValues();
 	}
+	
+	public void setEdgeMap(Map<HashSet<Integer>,HashSet<Integer>> edgeMap){
+		this.edgeMap = edgeMap;
+	}
+	
+	public Map<HashSet<Integer>,HashSet<Integer>> getEdgeMap(){
+		return this.edgeMap;
+	}
+	
+	public void generateEdgeMap(){
+		for (Iterator<HashSet<Integer>> iterator = this.segments.iterator(); iterator.hasNext();) {
+			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
+			this.edgeMap.put(segment, eu.getEdgeSet(segment));
+		}
+	}
+	
+	public void generateCentroidMap(){
+		for (Iterator<HashSet<Integer>> iterator = this.segments.iterator(); iterator.hasNext();) {
+			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
+			this.centroidMap.put(segment, eu.getRGBCentroid(segment));
+		}
+	}
+
 	
 	public void setCrowdDist(double crowdDist) {
 		this.crowdDist = crowdDist;

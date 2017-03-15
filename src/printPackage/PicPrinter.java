@@ -2,6 +2,7 @@ package printPackage;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -26,11 +27,10 @@ public class PicPrinter {
 	
 	
 	//if change segment to hold set with edges, no need to calculate here
-	public void generateImage(List<HashSet<Integer>> segments){
+	public void generateImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints){
 		Color[][] pixels = fh.getPixels();
 		for (HashSet<Integer> segment : segments) {
-			HashSet<Integer> edgePoints = eu.getEdgeSet(segment);
-			for (Integer integer : edgePoints) {
+			for (Integer integer : edgePoints.get(segment)) {
 				int[] coords = eu.toGridCoords(integer);
 				pixels[coords[0]][coords[1]] = this.green;
 			}
