@@ -5,15 +5,25 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+
+import mst.FileHandler;
+import utils.Euclidian;
 
 public class SegmentHandler {
 	
 	private int[] neighborArray;
 	private List<HashSet<Integer>> segments;
+	private FileHandler fh;
+	private Euclidian eu;
+	private Random r;
 	
-	public SegmentHandler(int[] neighborArray) {
+	public SegmentHandler(int[] neighborArray, FileHandler fh, Euclidian eu) {
 		this.neighborArray = neighborArray;
+		this.fh = fh;
+		this.eu = eu;
+		this.r = new Random();
 	}
 	
 	public void updateNeighborArray(int[] neighborArray) {
@@ -28,7 +38,28 @@ public class SegmentHandler {
 		return segments;
 	}
 	
+	public void mergeWithThreshold(List<HashSet<Integer>> segments, int threshold){
+		HashSet<HashSet<Integer>> removedSegments = new HashSet<HashSet<Integer>>();
+		for (Iterator<HashSet<Integer>> iterator = segments.iterator(); iterator.hasNext();) {
+			HashSet<Integer> hashSet = (HashSet<Integer>) iterator.next();
+			if (hashSet.size() < threshold){
+				mergeToNeighbor(hashSet, segments);
+				removedSegments.add(hashSet);
+			}
+		}
+		segments.removeAll(removedSegments);
+	}
 	
+	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments){
+		HashSet<Integer> edges = eu.getEdgeSet(segment);
+		Integer pixel = edges.iterator().next();
+		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
+		HashSet<Integer> neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
+		while(neighborSeg == segment){
+			neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
+		}
+		neighborSeg.addAll(segment);
+	}
 	
 	private List<HashSet<Integer>> calculateSegments() {
 		System.out.println("Calculating segments");
@@ -59,10 +90,10 @@ public class SegmentHandler {
 				next = setNext((HashSet<Integer>)unvisited);
 			}
 		}
-		System.out.println("# of segments: "+segments.size());
-		System.out.println(segments.get(1).size());
 		return segments;
 	}
+	
+
 	
 	private int setNext(HashSet<Integer> unvisited) {
 		if (unvisited.isEmpty()) {
