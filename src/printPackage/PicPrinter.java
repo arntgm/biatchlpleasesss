@@ -6,24 +6,36 @@ import java.util.HashSet;
 import java.util.List;
 
 import mst.FileHandler;
+import utils.Euclidian;
 
 public class PicPrinter {
 	
 	private Integer[] neighborArray;
 	private FileHandler fh;
+	private Euclidian eu;
+	private Color green;
 	
-	public PicPrinter(List<HashSet<Integer>> segments, FileHandler fh) {
+	public PicPrinter(List<HashSet<Integer>> segments, FileHandler fh, Euclidian eu) {
 		this.fh = fh;
 //		generateImage(segments, fh);
+		this.eu = eu;
+		this.green = new Color(0, 255, 0);
 	}
 	
-	private HashSet<Integer> getSegment(List<HashSet<Integer>> segments, int t) {
+
+	
+	
+	//if change segment to hold set with edges, no need to calculate here
+	public void generateImage(List<HashSet<Integer>> segments){
+		Color[][] pixels = fh.getPixels();
 		for (HashSet<Integer> segment : segments) {
-			if (segment.contains(t)) {
-				return segment;
+			HashSet<Integer> edgePoints = eu.getEdgeSet(segment);
+			for (Integer integer : edgePoints) {
+				int[] coords = eu.toGridCoords(integer);
+				pixels[coords[0]][coords[1]] = this.green;
 			}
 		}
-		return new HashSet<Integer>();
+		fh.saveNewImage(pixels);
 	}
 	
 	
@@ -38,8 +50,7 @@ public class PicPrinter {
 		Color green = new Color(0, 255, 0);
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				//@TODO: use HashSet for faster lookup on getSegment and contains
-				HashSet<Integer> segment = getSegment(segments, t);
+				HashSet<Integer> segment = utils.Euclidian.getSegment(segments, t);
 				if (i != 0) {
 					if (! segment.contains(t-width)) {
 						pixels[i][j] = green;
