@@ -2,6 +2,7 @@ package mst;
 import mst.Graph.Edge;
 import mst.Graph.Vertex;
 import mst.Prims;
+import printPackage.ImageDrawer;
 import printPackage.PicPrinter;
 import printPackage.SegmentHandler;
 import java.util.ArrayList;
@@ -23,12 +24,14 @@ public class MinSpanTree {
 	private Vertex<Integer>[][] vertGrid;
 	private int width;
 	private int height;
+	private Random r;
 	//private String[] objectives;
 	FileHandler fh;
 	
 	public MinSpanTree(String filename, FileHandler filehandler) {
 		// TODO Auto-generated constructor stub
 		fh = filehandler;
+		this.r = new Random();
 		this.width = fh.getWidth();
 		this.height = fh.getHeight();
 		this.vertGrid = new Vertex[this.height][this.width];
@@ -41,7 +44,6 @@ public class MinSpanTree {
 	
 	public List<int[]> generateChromosomes(int population, List<Edge<Integer>> origMSTPath, int[] origGene){
 //		origMSTPath.sort(new Comparator<Edge<Integer>());
-		Random r = new Random();
 		List<int[]> geneList = new ArrayList<int[]>();
 //		Collections.sort(origMSTPath);
 //		edgeQ.addAll(origMST);
@@ -49,10 +51,22 @@ public class MinSpanTree {
 		for (int i = 0; i < population; i++) {
 			int[]newGene = copyGene(origGene);
 			for (int j = 0; j < i; j++) {
-//				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j);
-				Edge<Integer>removeEdge = origMSTPath.remove(r.nextInt(origMSTPath.size()));
+//				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j); //expensive edge
+//				System.out.println(origMSTPath.size());
+				Edge<Integer>removeEdge = origMSTPath.remove(this.r.nextInt(origMSTPath.size())); //random edge
 				int index = removeEdge.getFromVertex().getValue();
-				newGene[index] = index;
+				
+				
+				newGene[index] = index; //point to self
+				
+				//point to random neighbor
+//				int oldLink = newGene[index];
+//				List<Vertex<Integer>> neighbors = getAllNeighbors(Math.floorDiv(index, this.width), index%this.width);
+//				int newLink = neighbors.get(r.nextInt(neighbors.size())).getValue();
+//				while(newLink == oldLink){
+//					newLink = neighbors.get(r.nextInt(neighbors.size())).getValue();
+//				}
+//				newGene[index] = newLink;
 			}
 			geneList.add(newGene);
 		}
@@ -110,6 +124,20 @@ public class MinSpanTree {
 		return Prims.getMSTPath(this.verts, this.edges, (Vertex<Integer>)this.verts.iterator().next());
 	}
 	
+	private List<Vertex<Integer>> getAllNeighbors(int x, int y){
+		List<Vertex<Integer>> neighbors = new ArrayList<Vertex<Integer>>();
+		if(y < this.width-1) //east
+			neighbors.add(this.vertGrid[x][y+1]);
+		if(x < this.height-1) //south
+			neighbors.add(this.vertGrid[x+1][y]);
+		if(y > 0) //west
+			neighbors.add(this.vertGrid[x][y-1]);
+		if(x > 0) //north
+			neighbors.add(this.vertGrid[x-1][y]);
+		return neighbors;
+	}
+	
+	
 	private Vertex<Integer>[] getNeighbors(int x, int y){
 		Vertex<Integer>[] neighbors = new Vertex[2];
 		if(y < this.width-1){
@@ -140,7 +168,7 @@ public class MinSpanTree {
 	
 	
 	public static void main(String[] args) {
-		String filename = "Test_image";
+		String filename = "Test_image_2";
 		
 		FileHandler fh = new FileHandler(filename);
 		MinSpanTree mst = new MinSpanTree(filename, fh);
@@ -162,13 +190,14 @@ public class MinSpanTree {
 //		System.out.print(genes[i]+" ");
 //		}
 //		System.out.println("next");
-		List<int[]> pop = mst.generateChromosomes(17, MST, genes);
+		List<int[]> pop = mst.generateChromosomes(35, MST, genes);
 		System.out.println("chromosomes generated");
 		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1));
 		ss.updateSegments();
 		List<HashSet<Integer>> seg = ss.getSegments();
 		PicPrinter pp = new PicPrinter(seg, fh);
 		pp.generateImage(seg, fh);
+		ImageDrawer.drawImage("saved.jpg");
 //		for(int[] chromo : pop){
 //			for (int i = 0; i < chromo.length; i++) {
 //				System.out.print(chromo[i]+" ");

@@ -57,7 +57,8 @@ public class SegmentHandler {
 				next = setNext((HashSet<Integer>)unvisited);
 			}
 		}
-//		System.out.println(segments);
+		System.out.println("# of segments: "+segments.size());
+		System.out.println(segments.get(1).size());
 		return segments;
 	}
 	

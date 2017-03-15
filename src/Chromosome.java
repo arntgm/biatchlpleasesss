@@ -1,10 +1,11 @@
 import printPackage.SegmentHandler;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 public class Chromosome implements Comparable<Chromosome> {
 
-private Integer[] neighborArray;
-private List<List<Integer>> segments;
+private int[] neighborArray;
+private List<HashSet<Integer>> segments;
 private SegmentHandler sh;
 private double devi;
 private double edge;
@@ -14,7 +15,7 @@ public int dominatedByCounter;
 public double crowdDist;
 public List<Chromosome> dominationList;
 	
-	public Chromosome(Integer[] neighborArray) {
+	public Chromosome(int[] neighborArray) {
 		this.neighborArray = neighborArray;
 		sh = new SegmentHandler(neighborArray);
 		sh.updateSegments();
@@ -78,31 +79,32 @@ public List<Chromosome> dominationList;
 		
 		public static Comparator<Chromosome> DEVI = new Comparator<Chromosome>() {
 			public int compare(Chromosome c1, Chromosome c2) {
-				if (c1.devi - c2.devi < 0) {
+				if (c1.devi  < c2.devi)
 					return -1;
-				} else {
+				if(c1.devi > c2.devi)
 					return 1;
-				}
+				return 0;
 			}
 		};
 		
 		public static Comparator<Chromosome> EDGE = new Comparator<Chromosome>() {
 			public int compare(Chromosome c1, Chromosome c2) {
-				if (c1.edge - c2.edge < 0) {
+				if (c1.edge  < c2.edge)
 					return -1;
-				} else {
+				if (c1.edge > c2.edge)
 					return 1;
-				}
+				return 0;
 			}
+			
 		};
 		
 		public static Comparator<Chromosome> CONN = new Comparator<Chromosome>() {
 			public int compare(Chromosome c1, Chromosome c2) {
-				if (c1.conn - c2.conn < 0) {
+				if (c1.conn < c2.conn)
 					return -1;
-				} else {
+				if (c1.conn > c2.conn)
 					return 1;
-				}
+				return 0;
 			}
 		};
 	}
