@@ -31,9 +31,14 @@ public class PicPrinter {
 	public void generateImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints){
 		Color[][] pixels = fh.getPixels();
 		for (HashSet<Integer> segment : segments) {
-			for (Integer integer : edgePoints.get(segment)) {
-				int[] coords = eu.toGridCoords(integer);
-				pixels[coords[0]][coords[1]] = this.green;
+			if(edgePoints!=null && edgePoints.containsKey(segment)){	
+				if(!edgePoints.get(segment).isEmpty()){
+					
+					for (Integer integer : edgePoints.get(segment)) {
+						int[] coords = eu.toGridCoords(integer);
+						pixels[coords[0]][coords[1]] = this.green;
+					}
+				}
 			}
 		}
 		fh.saveNewImage(pixels);
