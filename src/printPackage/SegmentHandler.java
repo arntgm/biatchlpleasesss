@@ -37,25 +37,26 @@ public class SegmentHandler {
 		List<Integer> visited = new ArrayList<Integer>();
 		List<Integer> unvisited = new ArrayList<Integer>();
 		for (int i = 0; i < neighborArray.length; i++) {
-			unvisited.add(i);
+			unvisited.add((Integer)i);
 		}
 		int next = 0;
 		int old;
 		boolean a;
 		while (visited.size() < neighborArray.length) {
-			segment.add(next);
-			for (int i = 0; i < unvisited.size(); i++) {
-				if (unvisited.get(i) == next) {
-					unvisited.remove(i);
-					break;
-				}
-			}
-			visited.add(next);
+			segment.add((Integer)next);
+//			for (int i = 0; i < unvisited.size(); i++) {
+//				if (unvisited.get(i) == next) {
+//					unvisited.remove(i);
+//					break;
+//				}
+//			}
+			unvisited.remove((Integer)next);
+			visited.add((Integer)next);
 			old = next;
 			next = neighborArray[old];
 			if (segment.contains(next)) {
 				segments.add(new ArrayList<Integer>(segment));
-				segment.clear();
+				segment.clear(); //remove this by simply instancing new? O(n)...
 				next = setNext(unvisited);
 				}
 			else if (visited.contains(next)) {
