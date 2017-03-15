@@ -31,30 +31,32 @@ public class SegmentHandler {
 
 	
 	private List<List<Integer>> calculateSegments() {
+		System.out.println("Calculating segments");
 		List<List<Integer>> segments = new ArrayList<List<Integer>>();
 		List<Integer> segment = new ArrayList<Integer>();
 		List<Integer> visited = new ArrayList<Integer>();
 		List<Integer> unvisited = new ArrayList<Integer>();
 		for (int i = 0; i < neighborArray.length; i++) {
-			unvisited.add(i);
+			unvisited.add((Integer)i);
 		}
 		int next = 0;
 		int old;
 		boolean a;
 		while (visited.size() < neighborArray.length) {
-			segment.add(next);
-			for (int i = 0; i < unvisited.size(); i++) {
-				if (unvisited.get(i) == next) {
-					unvisited.remove(i);
-					break;
-				}
-			}
-			visited.add(next);
+			segment.add((Integer)next);
+//			for (int i = 0; i < unvisited.size(); i++) {
+//				if (unvisited.get(i) == next) {
+//					unvisited.remove(i);
+//					break;
+//				}
+//			}
+			unvisited.remove((Integer)next);
+			visited.add((Integer)next);
 			old = next;
 			next = neighborArray[old];
 			if (segment.contains(next)) {
 				segments.add(new ArrayList<Integer>(segment));
-				segment.clear();
+				segment.clear(); //remove this by simply instancing new? O(n)...
 				next = setNext(unvisited);
 				}
 			else if (visited.contains(next)) {
@@ -69,6 +71,9 @@ public class SegmentHandler {
 	
 	private int setNext(List<Integer> unvisited) {
 		int next;
+		if (unvisited.isEmpty()) {
+			return 0;
+		}
 		int r = rand.nextInt(unvisited.size());
 		next = unvisited.get(r);
 //		if (visited.size() == neighborArray.length) {

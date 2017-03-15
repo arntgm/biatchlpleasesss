@@ -7,8 +7,10 @@ import printPackage.SegmentHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import mst.FileHandler;
 
@@ -37,15 +39,17 @@ public class MinSpanTree {
 	
 	
 	public List<int[]> generateChromosomes(int population, List<Edge<Integer>> origMSTPath, int[] origGene){
-//		origMSTPath.sort(new Comparator<Edge<T>());
+//		origMSTPath.sort(new Comparator<Edge<Integer>());
+		Random r = new Random();
 		List<int[]> geneList = new ArrayList<int[]>();
-		Collections.sort(origMSTPath);
+//		Collections.sort(origMSTPath);
 //		edgeQ.addAll(origMST);
 		
 		for (int i = 0; i < population; i++) {
 			int[]newGene = copyGene(origGene);
 			for (int j = 0; j < i; j++) {
-				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j);
+//				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j);
+				Edge<Integer>removeEdge = origMSTPath.remove(r.nextInt(origMSTPath.size()));
 				int index = removeEdge.getFromVertex().getValue();
 				newGene[index] = index;
 			}
@@ -157,7 +161,7 @@ public class MinSpanTree {
 //		System.out.print(genes[i]+" ");
 //		}
 //		System.out.println("next");
-		List<int[]> pop = mst.generateChromosomes(9, MST, genes);
+		List<int[]> pop = mst.generateChromosomes(40, MST, genes);
 		System.out.println("chromosomes generated");
 		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1));
 		ss.updateSegments();

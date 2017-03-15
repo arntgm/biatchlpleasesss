@@ -14,7 +14,7 @@ public class PicPrinter {
 	
 	public PicPrinter(List<List<Integer>> segments, FileHandler fh) {
 		this.fh = fh;
-		generateImage(segments, fh);
+//		generateImage(segments, fh);
 	}
 	
 	private List<Integer> getSegment(List<List<Integer>> segments, int t) {
@@ -28,6 +28,7 @@ public class PicPrinter {
 	
 	
 	public void generateImage(List<List<Integer>> segments, FileHandler fh) {
+		System.out.println("Generating image");
 		Color[][] pixels = fh.getPixels();
 		int height = fh.getHeight();
 		int width = fh.getWidth();
@@ -37,6 +38,7 @@ public class PicPrinter {
 		Color green = new Color(0, 255, 0);
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
+				//@TODO: use HashSet for faster lookup on getSegment and contains
 				List<Integer> segment = getSegment(segments, t);
 				if (i != 0) {
 					if (! segment.contains(t-width)) {
