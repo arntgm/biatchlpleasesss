@@ -1,19 +1,19 @@
 package printPackage;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Set;
 
 public class SegmentHandler {
 	
 	private int[] neighborArray;
-	private List<List<Integer>> segments;
-	private Random rand;
+	private List<HashSet<Integer>> segments;
 	
 	public SegmentHandler(int[] neighborArray) {
 		this.neighborArray = neighborArray;
-		rand = new Random();
 	}
 	
 	public void updateNeighborArray(int[] neighborArray) {
@@ -24,74 +24,60 @@ public class SegmentHandler {
 		segments = calculateSegments();
 	}
 	
-	public List<List<Integer>> getSegments() {
+	public List<HashSet<Integer>> getSegments() {
 		return segments;
 	}
 	
-
 	
-	private List<List<Integer>> calculateSegments() {
+	
+	private List<HashSet<Integer>> calculateSegments() {
 		System.out.println("Calculating segments");
-		List<List<Integer>> segments = new ArrayList<List<Integer>>();
-		List<Integer> segment = new ArrayList<Integer>();
-		List<Integer> visited = new ArrayList<Integer>();
-		List<Integer> unvisited = new ArrayList<Integer>();
+		List<HashSet<Integer>> segments = new ArrayList<HashSet<Integer>>();
+		Set<Integer> segment = new HashSet<Integer>();
+//		Set<Integer> visited = new HashSet<Integer>();
+		Set<Integer> unvisited = new HashSet<Integer>();
 		for (int i = 0; i < neighborArray.length; i++) {
-			unvisited.add(i);
+			unvisited.add((Integer)i);
 		}
 		int next = 0;
 		int old;
-		boolean a;
-		while (visited.size() < neighborArray.length) {
-			segment.add(next);
-			for (int i = 0; i < unvisited.size(); i++) {
-				if (unvisited.get(i) == next) {
-					unvisited.remove(i);
-					break;
-				}
-			}
-			visited.add(next);
+//		while (visited.size() < neighborArray.length) {
+		while (!unvisited.isEmpty()){
+			segment.add((Integer)next);
+			unvisited.remove((Integer)next);
+//			visited.add((Integer)next);
 			old = next;
 			next = neighborArray[old];
 			if (segment.contains(next)) {
-				segments.add(new ArrayList<Integer>(segment));
-				segment.clear();
-				next = setNext(unvisited);
+				segments.add((HashSet<Integer>) segment);
+				segment = new HashSet<Integer>();
+				next = setNext((HashSet<Integer>)unvisited);
 				}
-			else if (visited.contains(next)) {
-				mergeSegments(segments, segment, next);
+			else if (!unvisited.contains(next)) {
+				mergeSegments(segments,(HashSet<Integer>) segment, next);
 				segment.clear();
-				next = setNext(unvisited);
+				next = setNext((HashSet<Integer>)unvisited);
 			}
 		}
-		System.out.println(segments);
+		System.out.println("# of segments: "+segments.size());
+		System.out.println(segments.get(1).size());
 		return segments;
 	}
 	
-	private int setNext(List<Integer> unvisited) {
-		int next;
+	private int setNext(HashSet<Integer> unvisited) {
 		if (unvisited.isEmpty()) {
 			return 0;
 		}
-		int r = rand.nextInt(unvisited.size());
-		next = unvisited.get(r);
-//		if (visited.size() == neighborArray.length) {
-//			next = 0;
-//		} else {
-//			next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
-//			while (visited.contains(next)) {
-//				next = ThreadLocalRandom.current().nextInt(0,neighborArray.length);
-//			}
-//		}
-		return next;
+		return unvisited.iterator().next(); //grab first available element
 	}
 	
-	private void mergeSegments(List<List<Integer>> segments, List<Integer> segment, int next) {
-		for (List<Integer> s : segments) {
+	private void mergeSegments(List<HashSet<Integer>> segments, HashSet<Integer> segment, int next) {
+		for (HashSet<Integer> s : segments) {
 			if (s.contains(next)) {
-				for (Integer integer : segment) {
-					s.add(integer);
-				}
+				s.addAll(segment);
+//				for (Integer integer : segment) {
+//					s.add(integer);
+//				}
 				return;
 			}
 		}
