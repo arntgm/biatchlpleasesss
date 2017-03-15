@@ -94,6 +94,10 @@ private Euclidian eu;
 	private void updateDevi() {
 	}
 	
+	public int[] getNeighborArray() {
+		return neighborArray;
+	}
+	
 	public double getObjectiveValue(String objective) {
 		if (objective.equals("devi")) {
 			return devi;
