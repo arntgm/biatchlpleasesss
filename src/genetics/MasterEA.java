@@ -6,34 +6,50 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import mst.FileHandler;
+import mst.MinSpanTree;
+import mst.Graph.Edge;
+import printPackage.ImageDrawer;
+import printPackage.PicPrinter;
+import printPackage.SegmentHandler;
+import utils.Euclidian;
 public class MasterEA {
 	
-	private FileHandler fh;
 	private Color[][] newColor;
 	private String[] objectives;
+	private FileHandler fh;
+	private MinSpanTree mst;
+	private Euclidian eu;
+	private PicPrinter pp;
+	private List<List<Chromosome>> chromoTiers;
+	private List<Chromosome> newPopulation;
+	private List<Chromosome> combinedPopulation;
 	
 	private MasterEA(String filename) {
 		//this.fh = new FileHandler(filename);
-		init();
+		this.objectives = new String[] {"devi", "edge", "conn"};
+		this.fh = new FileHandler(filename);
+		this.mst = new MinSpanTree(filename, fh);
+		this.eu = new Euclidian(fh.getWidth(), fh.getHeight(), fh.getPixels());
+		this.pp = new PicPrinter(fh, eu);
 	}
 	
-	private void init() {
-		objectives = new String[] {"devi", "edge", "conn"};
-		//newColor = fh.getPixels();
-		//run();
-	}
+//	private void init() {
+//		//newColor = fh.getPixels();
+//		//run();
+//	}
 	
-	private void run() {
-		for (int i = 0; i < fh.getWidth(); i++) {
-			for (int j = 50; j < 60; j++) {
-				newColor[j][i] = new Color(255, 255, 255);
-			}
-		}
-		fh.saveNewImage(newColor);
-	}
+//	private void run() {
+//		for (int i = 0; i < fh.getWidth(); i++) {
+//			for (int j = 50; j < 60; j++) {
+//				newColor[j][i] = new Color(255, 255, 255);
+//			}
+//		}
+//		fh.saveNewImage(newColor);
+//	}
 	
 	private List<List<Chromosome>> fastNonDominatedSort(List<Chromosome> pop) {
 		int dom;
@@ -118,22 +134,47 @@ public class MasterEA {
 		}
 	}
 	
+	public void run(int population, int removeLimit){
+		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
+		int[] genes = this.mst.getGenes(MST);
+		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
+		
+//		System.out.println(mst.verts.size());
+//		System.out.println(mst.edges.size());
+//		for (Iterator<Vertex<Integer>> iterator = mst.verts.iterator(); iterator.hasNext();) {
+//			Vertex<Integer> v = (Vertex<Integer>) iterator.next();
+//			System.out.println(v.getEdges());
+//		}
+//		for (Iterator<Edge<Integer>> iterator = MST.iterator(); iterator.hasNext();) {
+//			Edge<Integer> edge = (Edge<Integer>) iterator.next();
+//			System.out.println(edge);
+//		}
+		
+		System.out.println(genes.length);
+//		for (int i = 0; i < genes.length; i++) {
+//		System.out.print(genes[i]+" ");
+//		}
+//		System.out.println("next");
+		System.out.println("chromosomes generated");
+		SegmentHandler ss = new SegmentHandler(pop.get(pop.size()-1), fh, eu);
+//		ss.updateSegments();
+		List<HashSet<Integer>> seg = ss.calculateSegments();
+		ss.mergeWithThreshold(seg, 500);
+		Color centroid = eu.getRGBCentroid(seg.get(4));
+		System.out.println("centroid: "+centroid+", pixels: "+seg.get(4).size());
+		System.out.println("deviation: "+eu.getRGBdeviation(seg.get(4), centroid));
+		System.out.println("# of segments: "+seg.size());
+//		System.out.println("location: "+seg.get(4).iterator().next());
+		pp.generateImage(seg);
+		ImageDrawer.drawImage("saved.jpg");
+	}
+	
 	public static void main(String[] args) {
+		String filename = "Test_image";
+		int population = 50;
+		int mstRemoveLimit = 300;
+		MasterEA m = new MasterEA(filename);
+		m.run(population, mstRemoveLimit);
 		//MasterEA master = new MasterEA("Test_image");
-		List<Integer> a = new ArrayList<Integer>();
-		a.add(2);
-		a.add(5);
-		a.add(19);
-		a.add(6);
-		a.add(1);
-		System.out.println(a);
-		int l = a.size();
-		List<Integer> subA = a.subList(0, l/2);
-		List<Integer> subB = a.subList(l/2, l);
-		System.out.println(subA);
-		System.out.println(subB);
-		Collections.sort(subA);
-		Collections.sort(subB);
-		System.out.println(a);
 	}
 }

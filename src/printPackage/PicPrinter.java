@@ -16,7 +16,8 @@ public class PicPrinter {
 	private Euclidian eu;
 	private Color green;
 	
-	public PicPrinter(List<HashSet<Integer>> segments, FileHandler fh, Euclidian eu) {
+	//used to take argument List<HashSet<Integer>> segments, 
+	public PicPrinter(FileHandler fh, Euclidian eu) {
 		this.fh = fh;
 //		generateImage(segments, fh);
 		this.eu = eu;
