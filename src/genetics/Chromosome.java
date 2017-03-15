@@ -1,3 +1,4 @@
+package genetics;
 import printPackage.SegmentHandler;
 import java.util.Comparator;
 import java.util.HashSet;
