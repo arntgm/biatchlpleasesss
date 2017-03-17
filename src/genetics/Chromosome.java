@@ -47,8 +47,12 @@ public class Chromosome implements Comparable<Chromosome> {
 		this.eu = eu;
 		this.edgeMap = new HashMap<HashSet<Integer>, HashSet<Integer>>();
 		this.centroidMap = new HashMap<HashSet<Integer>, Color>();
+		this.segments = new ArrayList<HashSet<Integer>>();
+		this.devi = 0;
+		this.conn = 0;
+		this.edge = 0;
 		this.sh = sh;
-		this.segments = sh.calculateSegments(this.neighborArray);
+//		this.segments = sh.calculateSegments(this.neighborArray);
 //		updateObjectiveValues();
 	}
 	
@@ -80,8 +84,7 @@ public class Chromosome implements Comparable<Chromosome> {
 	}
 	
 	public void generateCentroidMap(){
-		for (Iterator<HashSet<Integer>> iterator = this.segments.iterator(); iterator.hasNext();) {
-			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
+		for (HashSet<Integer> segment: this.segments) {
 			this.centroidMap.put(segment, eu.getRGBCentroid(segment));
 		}
 	}
@@ -90,9 +93,20 @@ public class Chromosome implements Comparable<Chromosome> {
 		this.segments = sh.calculateSegments(this.neighborArray);
 	}
 	
-	public void updateAll(String[] objectives){
+	public void clearAll(){
+		this.segments.clear();
+		this.edgeMap.clear();
+		this.centroidMap.clear();
+		this.devi = 0;
+		this.edge = 0;
+		this.conn = 0;
+	}
+	
+	public void updateAll(String[] objectives, int minSegSize){
+		clearAll();
 		this.generateSegments();
 		this.generateEdgeMap();
+		sh.mergeWithThreshold(getSegments(), getEdgeMap(), minSegSize);
 		this.generateCentroidMap();
 		for (int i = 0; i < objectives.length; i++) {
 			updateObjectiveValue(objectives[i]);
@@ -132,15 +146,15 @@ public class Chromosome implements Comparable<Chromosome> {
 	
 	// TODO Create update methods, to initialize and update objective values.
 	private double calcConn() {
-		return eu.getChromosomeConnValue(segments, edgeMap);
+		return eu.getChromosomeConnValue(this.segments, this.edgeMap);
 	}
 
 	private double calcEdge() {
-		return eu.getChromosomeEdgeValue(segments, edgeMap);
+		return eu.getChromosomeEdgeValue(this.segments, this.edgeMap);
 	}
 
 	private double calcDevi() {
-		return eu.getChromosomeRGBDev(segments, centroidMap);
+		return eu.getChromosomeRGBDev(this.segments, this.centroidMap);
 	}
 	
 	public int[] getNeighborArray() {

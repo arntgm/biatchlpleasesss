@@ -75,7 +75,7 @@ public class SegmentHandler {
 	}
 	
 	public List<HashSet<Integer>> calculateSegments(int[] neighborArray) {
-		System.out.println("Calculating segments");
+//		System.out.println("Calculating segments");
 		List<HashSet<Integer>> segments = new ArrayList<HashSet<Integer>>();
 		Set<Integer> segment = new HashSet<Integer>();
 //		Set<Integer> visited = new HashSet<Integer>();
