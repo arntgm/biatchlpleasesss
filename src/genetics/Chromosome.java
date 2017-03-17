@@ -3,6 +3,7 @@ import printPackage.SegmentHandler;
 import utils.Euclidian;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,7 +49,7 @@ public class Chromosome implements Comparable<Chromosome> {
 		this.centroidMap = new HashMap<HashSet<Integer>, Color>();
 		this.sh = sh;
 		this.segments = sh.calculateSegments(this.neighborArray);
-		updateObjectiveValues();
+//		updateObjectiveValues();
 	}
 	
 	public void setEdgeMap(HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap){
@@ -57,6 +58,17 @@ public class Chromosome implements Comparable<Chromosome> {
 	
 	public HashMap<HashSet<Integer>,HashSet<Integer>> getEdgeMap(){
 		return this.edgeMap;
+	}
+	
+	public Chromosome copyChromo(){
+		int[] geneCopy = new int[this.neighborArray.length];
+		System.arraycopy(this.neighborArray, 0, geneCopy, 0, neighborArray.length);
+		Chromosome newChromo = new Chromosome(geneCopy, this.eu, this.sh);
+		newChromo.setCentroidMap(new HashMap<HashSet<Integer>, Color>(this.centroidMap));
+		newChromo.setEdgeMap(new HashMap<HashSet<Integer>,HashSet<Integer>>(this.getEdgeMap()));
+		newChromo.setSegments(new ArrayList<HashSet<Integer>>(this.getSegments()));
+		newChromo.setCrowdDist(new Double(this.crowdDist));
+		return newChromo;
 	}
 	
 	public void generateEdgeMap(){
@@ -72,6 +84,20 @@ public class Chromosome implements Comparable<Chromosome> {
 			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
 			this.centroidMap.put(segment, eu.getRGBCentroid(segment));
 		}
+	}
+	
+	public void generateSegments(){
+		this.segments = sh.calculateSegments(this.neighborArray);
+	}
+	
+	public void updateAll(String[] objectives){
+		this.generateSegments();
+		this.generateEdgeMap();
+		this.generateCentroidMap();
+		for (int i = 0; i < objectives.length; i++) {
+			updateObjectiveValue(objectives[i]);
+		}
+		
 	}
 
 	
@@ -93,22 +119,28 @@ public class Chromosome implements Comparable<Chromosome> {
 //		}
 //	}
 	
-	public void updateObjectiveValues() {
-		updateDevi();
-		updateEdge();
-		updateConn();
+	public void updateObjectiveValue(String objective) {
+		switch (objective){
+		case "devi":
+			this.devi = calcDevi();
+		case "edge":
+			this.edge = calcEdge();
+		case "conn":
+			this.conn = calcConn();
+		}
 	}
 	
 	// TODO Create update methods, to initialize and update objective values.
-	private void updateConn() {
-		
+	private double calcConn() {
+		return eu.getChromosomeConnValue(segments, edgeMap);
 	}
 
-	private void updateEdge() {
-		
+	private double calcEdge() {
+		return eu.getChromosomeEdgeValue(segments, edgeMap);
 	}
 
-	private void updateDevi() {
+	private double calcDevi() {
+		return eu.getChromosomeRGBDev(segments, centroidMap);
 	}
 	
 	public int[] getNeighborArray() {

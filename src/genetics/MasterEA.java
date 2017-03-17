@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import mst.FileHandler;
 import mst.MinSpanTree;
@@ -31,8 +32,12 @@ public class MasterEA {
 	private List<List<Chromosome>> chromoTiers;
 	private List<Chromosome> newPopulation;
 	private List<Chromosome> oldPopulation;
+	private double crossoverRate;
+	private double mutationRate;
+	private Random r;
+	private Mutator mut;
 	
-	private MasterEA(String filename) {
+	private MasterEA(String filename, double crossover, double mutation) {
 		//this.fh = new FileHandler(filename);
 		this.objectives = new String[] {"devi", "edge", "conn"};
 		this.fh = new FileHandler(filename);
@@ -40,6 +45,10 @@ public class MasterEA {
 		this.eu = new Euclidian(fh.getWidth(), fh.getHeight(), fh.getPixels(), fh.getListPixels());
 		this.pp = new PicPrinter(fh, eu);
 		this.sh = new SegmentHandler(fh, eu);
+		this.crossoverRate = crossover;
+		this.mutationRate = mutation;
+		this.r = new Random();
+		this.mut = new Mutator();
 	}
 	
 //	private void init() {
@@ -160,6 +169,27 @@ public class MasterEA {
 		return spawns;
 	}
 	
+	public List<Chromosome> makeNewPop(List<Chromosome> oldPop){
+		List<Chromosome> newPop = new ArrayList<Chromosome>();
+		while(newPop.size() < oldPop.size()) {
+			Chromosome[] parents = selection(oldPop);
+			Chromosome[] children = new Chromosome[2];
+			double cross = r.nextDouble();
+			if(cross <= this.crossoverRate){
+				
+			}else{
+				children[0] = parents[0].copyChromo();
+				children[1] = parents[1].copyChromo();
+			}
+			cross = r.nextDouble();
+		}
+		for (Chromosome chromosome : newPop) {
+//			boolean update = false;
+			if(mut.mutateChromosome(chromosome, eu))
+				chromosome.updateAll(this.objectives);
+		}
+	}
+	
 	public void run(int population, int removeLimit, int minSegmentSize, int maxGenerations){
 		int genCounter = 0;
 		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
@@ -213,7 +243,7 @@ public class MasterEA {
 		int mstRemoveLimit = 100;
 		int minSegmentSize = 150;
 		int maxGenerations = 15;
-		MasterEA m = new MasterEA(filename);
+		MasterEA m = new MasterEA(filename, 0.7, 0.001);
 		m.run(population, mstRemoveLimit, minSegmentSize, maxGenerations);
 		//MasterEA master = new MasterEA("Test_image");
 
