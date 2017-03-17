@@ -37,7 +37,7 @@ public class MasterEA {
 		this.objectives = new String[] {"devi", "edge", "conn"};
 		this.fh = new FileHandler(filename);
 		this.mst = new MinSpanTree(filename, fh);
-		this.eu = new Euclidian(fh.getWidth(), fh.getHeight(), fh.getPixels());
+		this.eu = new Euclidian(fh.getWidth(), fh.getHeight(), fh.getPixels(), fh.getListPixels());
 		this.pp = new PicPrinter(fh, eu);
 		this.sh = new SegmentHandler(fh, eu);
 	}
@@ -166,7 +166,7 @@ public class MasterEA {
 		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
 		System.out.println("kjæm sæ sjø");
-		
+		System.out.println(eu.getChromosomeEdgeAndConn(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap())[1]);
 		pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
 		ImageDrawer.drawImage("saved.jpg");
 	}
@@ -174,7 +174,7 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image_2";
 		int population = 2;
-		int mstRemoveLimit = 40;
+		int mstRemoveLimit = 100;
 		int minSegmentSize = 150;
 		MasterEA m = new MasterEA(filename);
 		m.run(population, mstRemoveLimit, minSegmentSize);
