@@ -166,7 +166,6 @@ public class MasterEA {
 		int[] genes = this.mst.getGenes(MST);
 		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
-<<<<<<< HEAD
 		System.out.println("Initial chromosomes created");
 		// TODO Initiate chromosome objective values!
 		this.chromoTiers = fastNonDominatedSort(oldPopulation);
@@ -202,12 +201,10 @@ public class MasterEA {
 		
 		//pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
 		//ImageDrawer.drawImage("saved.jpg");
-=======
 		System.out.println("kjæm sæ sjø");
 		System.out.println(eu.getChromosomeEdgeAndConn(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap())[1]);
 		pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
 		ImageDrawer.drawImage("saved.jpg");
->>>>>>> refs/remotes/origin/master
 	}
 	
 	public static void main(String[] args) {
