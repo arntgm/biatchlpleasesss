@@ -11,12 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Random;
-=======
 import java.util.Set;
->>>>>>> refs/remotes/origin/master
-
 import mst.FileHandler;
 import mst.MinSpanTree;
 import mst.Graph.Edge;
