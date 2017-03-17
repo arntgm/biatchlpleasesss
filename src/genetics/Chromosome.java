@@ -68,10 +68,10 @@ public class Chromosome implements Comparable<Chromosome> {
 		int[] geneCopy = new int[this.neighborArray.length];
 		System.arraycopy(this.neighborArray, 0, geneCopy, 0, neighborArray.length);
 		Chromosome newChromo = new Chromosome(geneCopy, this.eu, this.sh);
-		newChromo.setCentroidMap(new HashMap<HashSet<Integer>, Color>(this.centroidMap));
-		newChromo.setEdgeMap(new HashMap<HashSet<Integer>,HashSet<Integer>>(this.getEdgeMap()));
-		newChromo.setSegments(new ArrayList<HashSet<Integer>>(this.getSegments()));
-		newChromo.setCrowdDist(new Double(this.crowdDist));
+//		newChromo.setCentroidMap(new HashMap<HashSet<Integer>, Color>(this.centroidMap));
+//		newChromo.setEdgeMap(new HashMap<HashSet<Integer>,HashSet<Integer>>(this.getEdgeMap()));
+//		newChromo.setSegments(new ArrayList<HashSet<Integer>>(this.getSegments()));
+//		newChromo.setCrowdDist(new Double(this.crowdDist));
 		return newChromo;
 	}
 	
