@@ -1,12 +1,17 @@
 package genetics;
 
 import utils.Euclidian;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+
+import printPackage.SegmentHandler;
 
 public class Mutator {
 	
 	private Random rand;
+	private SegmentHandler sh;
 	
 	public Mutator() {
 		this.rand = new Random();
@@ -30,23 +35,26 @@ public class Mutator {
 	}
 	
 	//Takes in Chromosome, returns the mutated neighborArray.
-	public int[] mutateChromosome(Chromosome p, Euclidian e) {
-		int[] genes = p.getNeighborArray();
-		return mutateGenes(genes, e);
+	public boolean mutateChromosome(Chromosome p, Euclidian e) {
+		int[] genes = p.getNeighborArray();		
+		return mutateGenes(genes, e, p.getSegments());
 	}
 	
-	//Takes in a neighborArray, returns an mutated one.
-	public int[] mutateGenes(int[] genes, Euclidian e) {
+	//mutates array in place
+	public boolean mutateGenes(int[] genes, Euclidian e, List<HashSet<Integer>> segments) {
+		boolean updateSegments = false;
 		int toNode;
 		List<Integer> neighbors;
 		for (int i = 0; i < genes.length; i++) {
 			if (rand.nextDouble()<0.001) {
 				neighbors = e.getNeighborNumbers(i);
 				toNode = neighbors.get(rand.nextInt(neighbors.size()-1));
+				if(!Euclidian.getSegment(segments, genes[i]).contains(toNode))
+					updateSegments = true;
 				genes[i] = toNode;
 			}
 		}
-		return genes;
+		return updateSegments;
 	}
 
 }

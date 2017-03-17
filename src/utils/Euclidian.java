@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Euclidian {
 	
@@ -57,6 +58,29 @@ public class Euclidian {
 			}
 		}
 		return edgeGenes;
+	}
+	
+	public float getChromosomeConnValue(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap){
+		float totEdgeValue = 0;
+		for (HashSet<Integer> segment : segments) {
+			totEdgeValue += getSegmentConnValue(segment, edgeMap.get(segment));
+		}
+		return totEdgeValue;
+	}
+	
+	public float getSegmentConnValue(HashSet<Integer> segment, HashSet<Integer> edgeSet){
+		float segmentEdgeValue = 0;
+		for (Integer gene : edgeSet) {
+			float conn = 0;
+			List<Integer> neighbors = getNeighborNumbers(gene);
+			for (Integer neighbor : neighbors) {
+				if(!segment.contains(neighbor)){
+					conn +=1;
+					segmentEdgeValue += 1/conn;
+				}
+			}
+		}
+		return segmentEdgeValue;
 	}
 	
 	//returns both edge value and connectivity objectives//
@@ -121,6 +145,14 @@ public class Euclidian {
 		int bOne = RGBone.getBlue();
 		int bTwo = RGBtwo.getBlue();
 		return (float)Math.sqrt(Math.pow((rTwo-rOne), 2) + Math.pow((gTwo-gOne),2) + Math.pow((bTwo-bOne),2));
+	}
+	
+	public float getChromosomeRGBDev(List<HashSet<Integer>> segments, Map<HashSet<Integer>, Color> centroidMap){
+		float totDev = 0;
+		for (HashSet<Integer> segment : segments) {
+			totDev+=getSegmentRGBdeviation(segment, centroidMap.get(segment));
+		}
+		return totDev;
 	}
 	
 	public float getSegmentRGBdeviation(HashSet<Integer> segment, Color centroid){
