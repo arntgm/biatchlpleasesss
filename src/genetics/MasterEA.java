@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import mst.FileHandler;
 import mst.MinSpanTree;
@@ -91,7 +92,7 @@ public class MasterEA {
 				}
 			}
 			i += 1;
-			List newQ = new ArrayList<Chromosome>(Q);
+			List<Chromosome> newQ = new ArrayList<Chromosome>(Q);
 			F.add(newQ);
 		}
 		return F;
@@ -174,7 +175,7 @@ public class MasterEA {
 			this.oldPopulation.addAll(tier);
 		}
 		newPopulation = makeNewPop(oldPopulation);
-		genCounter ++;
+		genCounter++;
 		
 		while (genCounter < maxGenerations) {
 			oldPopulation.addAll(new ArrayList<Chromosome>(newPopulation));
@@ -182,29 +183,37 @@ public class MasterEA {
 			newPopulation.clear();
 			int i = 0;
 			while (newPopulation.size() + chromoTiers.get(i).size() <= population) {
-				
+				crowdingDistanceAssignment(chromoTiers.get(i));
+				newPopulation.addAll(chromoTiers.get(i));
+				i++;
 			}
+			Collections.sort(chromoTiers.get(i), Chromosome.Comparators.CROWD);
+			while (newPopulation.size() < population) {
+				newPopulation.add(chromoTiers.get(i).remove(0));
+			}
+			oldPopulation = new ArrayList<Chromosome>(newPopulation);
+			newPopulation = makeNewPop(oldPopulation);
+			genCounter++;
 		}
 			
+		chromoTiers = fastNonDominatedSort(newPopulation);
+		List<Chromosome> top5 = new ArrayList<Chromosome>();
+		int tier = 0;
+		int n = 0;
+		while (top5.size() < 5) {
+			top5.add(chromoTiers.get(tier).get(n));
+			n++;
+			if (n > chromoTiers.get(tier).size() - 1) {
+				tier++;
+				n = 0;
+			}
+		}
+		for (int i = 0; i < 5; i++) {
+//			System.out.println(eu.getChromosomeEdgeAndConn(top5.get(i).getSegments(), top5.get(i).getEdgeMap())[1]);
+			pp.generateImage(top5.get(i).getSegments(), (HashMap)top5.get(i).getEdgeMap());
+			ImageDrawer.drawImage("saved"+i+".jpg");
+		}
 		
-//		int tier = 0;
-//		int n = 0;
-//		while (this.newPopulation.size() < population) {
-//			newPopulation.add(chromoTiers.get(tier).get(n));
-//			n ++;
-//			if (n > chromoTiers.get(tier).size()-1) {
-//				n = 0;
-//				tier ++;
-//			}
-//		}
-		
-		
-		//pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
-		//ImageDrawer.drawImage("saved.jpg");
-		System.out.println("kjæm sæ sjø");
-		System.out.println(eu.getChromosomeEdgeAndConn(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap())[1]);
-		pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
-		ImageDrawer.drawImage("saved.jpg");
 	}
 	
 	public static void main(String[] args) {
