@@ -56,14 +56,14 @@ public class FileHandler {
 		return this.width;
 	}
 	
-	public void saveNewImage(Color[][] newPixels){
+	public void saveNewImage(Color[][] newPixels, String filename){
 		BufferedImage image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
 				image.setRGB(j,i,newPixels[i][j].getRGB());
 			}
 		}
-		File outputfile = new File("saved.jpg");
+		File outputfile = new File(filename);
 		try {
 			ImageIO.write(image, "jpg", outputfile);
 		} catch (IOException e) {

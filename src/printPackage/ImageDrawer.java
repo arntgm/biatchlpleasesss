@@ -31,4 +31,9 @@ public class ImageDrawer {
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    }
 	    
+	    public static void main(String[] args) {
+			ImageDrawer i = new ImageDrawer();
+			i.drawImage("saved0.jpg");
+		}
+	    
 }
