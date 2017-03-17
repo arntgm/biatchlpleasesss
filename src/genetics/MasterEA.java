@@ -37,8 +37,9 @@ public class MasterEA {
 	private Random r;
 	private Mutator mut;
 	private int tourneySize;
+	private int minSegmentSize;
 	
-	private MasterEA(String filename, double crossover, double mutation, String[] objectives, int tourney) {
+	private MasterEA(String filename, double crossover, double mutation, String[] objectives, int tourney, int minSeg) {
 		//this.fh = new FileHandler(filename);
 		this.objectives = objectives;
 		this.fh = new FileHandler(filename);
@@ -51,6 +52,7 @@ public class MasterEA {
 		this.r = new Random();
 		this.mut = new Mutator();
 		this.tourneySize = tourney;
+		this.minSegmentSize = minSeg;
 	}
 	
 //	private void init() {
@@ -194,29 +196,34 @@ public class MasterEA {
 	}
 	
 	public List<Chromosome> makeNewPop(List<Chromosome> oldPop){
+		System.out.println("Breeding new population...");
 		List<Chromosome> newPop = new ArrayList<Chromosome>();
 		while(newPop.size() < oldPop.size()) {
 			Chromosome[] parents = selection(oldPop);
 			Chromosome[] children = new Chromosome[2];
 			double cross = r.nextDouble();
 			if(cross <= this.crossoverRate){
-				
+				int[][] newGenes = mut.crossover(parents[0], parents[1]);
+				children[0] = new Chromosome(newGenes[0], eu, sh);
+				children[1] = new Chromosome(newGenes[1], eu, sh);
 			}else{
 				children[0] = parents[0].copyChromo();
 				children[1] = parents[1].copyChromo();
 			}
+			newPop.add(children[0]);
+			newPop.add(children[1]);
 		}
 		for (Chromosome chromosome : newPop) {
 //			boolean update = false;
 //			if(mut.mutateChromosome(chromosome, eu))
 //				chromosome.updateAll(this.objectives);
 			mut.mutateChromosome(chromosome, this.eu);
-			chromosome.updateAll(this.objectives);
+			chromosome.updateAll(this.objectives, this.minSegmentSize);
 		}
 		return newPop;
 	}
 	
-	public void run(int population, int removeLimit, int minSegmentSize, int maxGenerations){
+	public void run(int population, int removeLimit, int maxGenerations){
 		int genCounter = 0;
 		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
 		int[] genes = this.mst.getGenes(MST);
@@ -224,8 +231,10 @@ public class MasterEA {
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
 		System.out.println("Initial chromosomes created");
 		for (Chromosome chrome : oldPopulation) {
-			chrome.updateAll(this.objectives);
+			System.out.println("Updating chromosome...");
+			chrome.updateAll(this.objectives, this.minSegmentSize);
 		}
+		System.out.println("All chromosomes updated. Sorting...");
 		this.chromoTiers = fastNonDominatedSort(oldPopulation);
 		oldPopulation.clear();
 		for (List<Chromosome> tier : chromoTiers) {
@@ -235,6 +244,7 @@ public class MasterEA {
 		genCounter++;
 		
 		while (genCounter < maxGenerations) {
+			System.out.println("Generation: "+genCounter);
 			oldPopulation.addAll(new ArrayList<Chromosome>(newPopulation));
 			chromoTiers = fastNonDominatedSort(oldPopulation);
 			newPopulation.clear();
@@ -249,6 +259,7 @@ public class MasterEA {
 				newPopulation.add(chromoTiers.get(i).remove(0));
 			}
 			oldPopulation = new ArrayList<Chromosome>(newPopulation);
+			newPopulation.clear();
 			newPopulation = makeNewPop(oldPopulation);
 			genCounter++;
 		}
@@ -266,7 +277,7 @@ public class MasterEA {
 		}
 		for (int i = 0; i < topSols.size(); i++) {
 //			System.out.println(eu.getChromosomeEdgeAndConn(topSols.get(i).getSegments(), topSols.get(i).getEdgeMap())[1]);
-			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap());
+			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved"+i+".jpg");
 			ImageDrawer.drawImage("saved"+i+".jpg");
 		}
 		
@@ -275,13 +286,13 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image_2";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-		int population = 2;
+		int population = 10;
 		int mstRemoveLimit = 100;
-		int minSegmentSize = 150;
-		int maxGenerations = 15;
+		int minSegmentSize = 250;
+		int maxGenerations = 4;
 		int tourneySize = 2; //binary
-		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize);
-		m.run(population, mstRemoveLimit, minSegmentSize, maxGenerations);
+		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
+		m.run(population, mstRemoveLimit, maxGenerations);
 		//MasterEA master = new MasterEA("Test_image");
 
 	}
