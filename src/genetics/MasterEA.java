@@ -160,15 +160,47 @@ public class MasterEA {
 		return spawns;
 	}
 	
-	public void run(int population, int removeLimit, int minSegmentSize){
+	public void run(int population, int removeLimit, int minSegmentSize, int maxGenerations){
+		int genCounter = 0;
 		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
 		int[] genes = this.mst.getGenes(MST);
 		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
-		System.out.println("kjæm sæ sjø");
+		System.out.println("Initial chromosomes created");
+		// TODO Initiate chromosome objective values!
+		this.chromoTiers = fastNonDominatedSort(oldPopulation);
+		oldPopulation.clear();
+		for (List<Chromosome> tier : chromoTiers) {
+			this.oldPopulation.addAll(tier);
+		}
+		newPopulation = makeNewPop(oldPopulation);
+		genCounter ++;
 		
-		pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
-		ImageDrawer.drawImage("saved.jpg");
+		while (genCounter < maxGenerations) {
+			oldPopulation.addAll(new ArrayList<Chromosome>(newPopulation));
+			chromoTiers = fastNonDominatedSort(oldPopulation);
+			newPopulation.clear();
+			int i = 0;
+			while (newPopulation.size() + chromoTiers.get(i).size() <= population) {
+				
+			}
+		}
+			
+		
+//		int tier = 0;
+//		int n = 0;
+//		while (this.newPopulation.size() < population) {
+//			newPopulation.add(chromoTiers.get(tier).get(n));
+//			n ++;
+//			if (n > chromoTiers.get(tier).size()-1) {
+//				n = 0;
+//				tier ++;
+//			}
+//		}
+		
+		
+		//pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
+		//ImageDrawer.drawImage("saved.jpg");
 	}
 	
 	public static void main(String[] args) {
@@ -176,8 +208,10 @@ public class MasterEA {
 		int population = 2;
 		int mstRemoveLimit = 40;
 		int minSegmentSize = 150;
+		int maxGenerations = 15;
 		MasterEA m = new MasterEA(filename);
-		m.run(population, mstRemoveLimit, minSegmentSize);
+		m.run(population, mstRemoveLimit, minSegmentSize, maxGenerations);
 		//MasterEA master = new MasterEA("Test_image");
+
 	}
 }
