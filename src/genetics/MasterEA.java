@@ -223,7 +223,9 @@ public class MasterEA {
 		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
 		System.out.println("Initial chromosomes created");
-		// TODO Initiate chromosome objective values!
+		for (Chromosome chrome : oldPopulation) {
+			chrome.updateAll(this.objectives);
+		}
 		this.chromoTiers = fastNonDominatedSort(oldPopulation);
 		oldPopulation.clear();
 		for (List<Chromosome> tier : chromoTiers) {
