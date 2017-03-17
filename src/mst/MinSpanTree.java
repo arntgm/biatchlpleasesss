@@ -46,21 +46,18 @@ public class MinSpanTree {
 	
 	
 	public List<int[]> generateGeneArrays(int population, int removeLimit, List<Edge<Integer>> origMSTPath, int[] origGene){
-//		origMSTPath.sort(new Comparator<Edge<Integer>());
 		System.out.println("Generating gene arrays");
 		List<int[]> geneList = new ArrayList<int[]>();
 //		Collections.sort(origMSTPath);
-//		edgeQ.addAll(origMST);
-		
 		for (int i = 0; i < population; i++) {
-			int[]newGene = copyGene(origGene);
+			List<Edge<Integer>> mstCopy = new ArrayList<Edge<Integer>>(origMSTPath);
+			int[]newGene = new int[origGene.length];
+			System.arraycopy(origGene, 0, newGene, 0, origGene.length);
 			for (int j = 0; j+i < removeLimit; j++) {
 //				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j); //expensive edge
-//				System.out.println(origMSTPath.size());
-				Edge<Integer>removeEdge = origMSTPath.remove(this.r.nextInt(origMSTPath.size())); //random edge
+				Edge<Integer>removeEdge = mstCopy.remove(this.r.nextInt(mstCopy.size())); //random edge
+				System.out.println("Orig still contains edge? "+origMSTPath.contains(removeEdge));
 				int index = removeEdge.getFromVertex().getValue();
-				
-				
 				newGene[index] = index; //point to self
 				
 				//point to random neighbor
@@ -72,8 +69,11 @@ public class MinSpanTree {
 //				}
 //				newGene[index] = newLink;
 			}
+			System.out.println("Original MST: "+origMSTPath.size());
+			System.out.println("Copy size: "+mstCopy.size());
 			geneList.add(newGene);
 		}
+		System.out.println(geneList.size());
 		return geneList;
 	}
 	

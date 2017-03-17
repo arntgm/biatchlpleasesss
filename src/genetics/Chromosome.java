@@ -76,8 +76,8 @@ public class Chromosome implements Comparable<Chromosome> {
 	}
 	
 	public void generateEdgeMap(){
-		for (Iterator<HashSet<Integer>> iterator = this.segments.iterator(); iterator.hasNext();) {
-			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
+		for (HashSet<Integer> segment : this.segments) {
+			
 //			System.out.println("new segment: "+segment.toString());
 			this.edgeMap.put(segment, eu.getEdgeSet(segment));
 		}
@@ -102,7 +102,7 @@ public class Chromosome implements Comparable<Chromosome> {
 		this.conn = 0;
 	}
 	
-	public void updateAll(String[] objectives, int minSegSize){
+	public void updateAllInit(String[] objectives, int minSegSize){
 		clearAll();
 		this.generateSegments();
 		this.generateEdgeMap();
@@ -111,7 +111,18 @@ public class Chromosome implements Comparable<Chromosome> {
 		for (int i = 0; i < objectives.length; i++) {
 			updateObjectiveValue(objectives[i]);
 		}
-		
+	}
+	
+	public void updateAll(String[] objectives, int minSegSize, boolean init){
+		clearAll();
+		this.generateSegments();
+		this.generateEdgeMap();
+		if(init)
+			sh.mergeWithThreshold(getSegments(), getEdgeMap(), minSegSize);
+		this.generateCentroidMap();
+		for (int i = 0; i < objectives.length; i++) {
+			updateObjectiveValue(objectives[i]);
+		}
 	}
 
 	

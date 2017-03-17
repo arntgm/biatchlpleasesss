@@ -1,6 +1,7 @@
 package printPackage;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,8 +27,23 @@ public class PicPrinter {
 	
 
 	
+	public BufferedImage generateBufferedImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints){
+		Color[][] pixels = fh.getPixels();
+		for (HashSet<Integer> segment : segments) {
+			if(edgePoints!=null && edgePoints.containsKey(segment)){	
+				if(!edgePoints.get(segment).isEmpty()){
+					
+					for (Integer integer : edgePoints.get(segment)) {
+						int[] coords = eu.toGridCoords(integer);
+						pixels[coords[0]][coords[1]] = this.green;
+					}
+				}
+			}
+		}
+		return fh.generateBufferedImage(pixels);
+	}
 	
-	//if change segment to hold set with edges, no need to calculate here
+	
 	public void generateImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints, String filename){
 		Color[][] pixels = fh.getPixels();
 		for (HashSet<Integer> segment : segments) {

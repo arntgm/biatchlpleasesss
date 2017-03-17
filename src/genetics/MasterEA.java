@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.Set;
 import mst.FileHandler;
@@ -92,7 +93,7 @@ public class MasterEA {
 		F.add(F1);
 		int i = 0;
 		List<Chromosome> Q;
-		while (! F.get(i).isEmpty()) {
+		while (i<F.size() && !F.get(i).isEmpty() ) {
 			Q = new ArrayList<Chromosome>();
 			for (Chromosome p : F.get(i)) {
 				for (Chromosome q : p.dominationList) {
@@ -104,8 +105,9 @@ public class MasterEA {
 				}
 			}
 			i += 1;
-			List<Chromosome> newQ = new ArrayList<Chromosome>(Q);
-			F.add(newQ);
+			if(!Q.isEmpty()){				
+				F.add(new ArrayList<Chromosome>(Q));
+			}
 		}
 		return F;
 	}
@@ -158,16 +160,6 @@ public class MasterEA {
 		for (int[] gene : pop) {
 			System.out.println("new chromo!");
 			Chromosome c = new Chromosome(gene, this.eu, this.sh);
-			c.generateEdgeMap();
-			Collection<HashSet<Integer>> edges = c.getEdgeMap().values();
-//			System.out.println("# of segments: "+c.getSegments().size());
-//			for (Iterator iterator = edges.iterator(); iterator.hasNext();) {
-//				HashSet<Integer> hashSet = (HashSet<Integer>) iterator.next();
-////				System.out.println(hashSet.toString());
-//			}
-			c.generateCentroidMap();
-			sh.mergeWithThreshold(c.getSegments(), c.getEdgeMap(), threshold);
-			System.out.println("heihå");
 			spawns.add(c);
 		}
 		return spawns;
@@ -195,7 +187,7 @@ public class MasterEA {
 		return sel;
 	}
 	
-	public List<Chromosome> makeNewPop(List<Chromosome> oldPop){
+	public List<Chromosome> makeNewPop(List<Chromosome> oldPop, boolean init){
 		System.out.println("Breeding new population...");
 		List<Chromosome> newPop = new ArrayList<Chromosome>();
 		while(newPop.size() < oldPop.size()) {
@@ -204,6 +196,7 @@ public class MasterEA {
 			double cross = r.nextDouble();
 			if(cross <= this.crossoverRate){
 				int[][] newGenes = mut.crossover(parents[0], parents[1]);
+//				System.out.println("length of gene used: "+newGenes[0].length);
 				children[0] = new Chromosome(newGenes[0], eu, sh);
 				children[1] = new Chromosome(newGenes[1], eu, sh);
 			}else{
@@ -217,8 +210,8 @@ public class MasterEA {
 //			boolean update = false;
 //			if(mut.mutateChromosome(chromosome, eu))
 //				chromosome.updateAll(this.objectives);
-			mut.mutateChromosome(chromosome, this.eu);
-			chromosome.updateAll(this.objectives, this.minSegmentSize);
+//			mut.mutateChromosome(chromosome, this.eu);
+			chromosome.updateAll(this.objectives, this.minSegmentSize, init);
 		}
 		return newPop;
 	}
@@ -230,22 +223,32 @@ public class MasterEA {
 		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
 		System.out.println("Initial chromosomes created");
+		boolean init = true;
 		for (Chromosome chrome : oldPopulation) {
 			System.out.println("Updating chromosome...");
-			chrome.updateAll(this.objectives, this.minSegmentSize);
+			chrome.updateAll(this.objectives, this.minSegmentSize, init);
 		}
+		//TEST PRINTS
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+
+		
 		System.out.println("All chromosomes updated. Sorting...");
 		this.chromoTiers = fastNonDominatedSort(oldPopulation);
 		oldPopulation.clear();
 		for (List<Chromosome> tier : chromoTiers) {
 			this.oldPopulation.addAll(tier);
 		}
-		newPopulation = makeNewPop(oldPopulation);
+		newPopulation = makeNewPop(oldPopulation, init);
+		
+
 		genCounter++;
 		
 		while (genCounter < maxGenerations) {
 			System.out.println("Generation: "+genCounter);
 			oldPopulation.addAll(new ArrayList<Chromosome>(newPopulation));
+			chromoTiers.clear();
 			chromoTiers = fastNonDominatedSort(oldPopulation);
 			newPopulation.clear();
 			int i = 0;
@@ -260,10 +263,10 @@ public class MasterEA {
 			}
 			oldPopulation = new ArrayList<Chromosome>(newPopulation);
 			newPopulation.clear();
-			newPopulation = makeNewPop(oldPopulation);
+			newPopulation = makeNewPop(oldPopulation, init);
 			genCounter++;
 		}
-			
+		chromoTiers.clear();
 		chromoTiers = fastNonDominatedSort(newPopulation);
 		List<Chromosome> topSols = new ArrayList<Chromosome>();
 		int tier = 0;
@@ -286,10 +289,10 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image_2";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-		int population = 10;
+		int population = 12;
 		int mstRemoveLimit = 100;
 		int minSegmentSize = 250;
-		int maxGenerations = 4;
+		int maxGenerations = 20;
 		int tourneySize = 2; //binary
 		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
