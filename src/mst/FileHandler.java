@@ -37,7 +37,13 @@ public class FileHandler {
 	    }
 	
 	public Color[][] getPixels(){
-		return this.pixels;
+		Color[][] newPixels = new Color[this.height][this.width];
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.width; j++) {
+				newPixels[i][j] = new Color(this.pixels[i][j].getRGB());
+			}
+		}
+		return newPixels;
 	}
 	
 	public Color[] getListPixels(){
@@ -54,6 +60,16 @@ public class FileHandler {
 	
 	public int getWidth() {
 		return this.width;
+	}
+	
+	public BufferedImage generateBufferedImage(Color[][] pixels){
+			BufferedImage image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+			for (int i = 0; i < this.height; i++) {
+				for (int j = 0; j < this.width; j++) {
+					image.setRGB(j,i,pixels[i][j].getRGB());
+				}
+			}
+			return image;
 	}
 	
 	public void saveNewImage(Color[][] newPixels, String filename){

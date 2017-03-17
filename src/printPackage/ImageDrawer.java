@@ -31,6 +31,19 @@ public class ImageDrawer {
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    }
 	    
+	    public static void drawImage(BufferedImage img){
+//	        BufferedImage img;
+	        ImageIcon icon=new ImageIcon(img);
+	        JFrame frame=new JFrame();
+	        frame.setLayout(new FlowLayout());
+	        frame.setSize(img.getWidth(), img.getHeight()+100);;
+	        JLabel lbl=new JLabel();
+	        lbl.setIcon(icon);
+	        frame.add(lbl);
+	        frame.setVisible(true);
+	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    }
+	    
 	    public static void main(String[] args) {
 			ImageDrawer i = new ImageDrawer();
 			i.drawImage("saved0.jpg");
