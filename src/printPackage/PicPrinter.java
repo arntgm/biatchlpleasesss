@@ -28,7 +28,7 @@ public class PicPrinter {
 	
 	
 	//if change segment to hold set with edges, no need to calculate here
-	public void generateImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints){
+	public void generateImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints, String filename){
 		Color[][] pixels = fh.getPixels();
 		for (HashSet<Integer> segment : segments) {
 			if(edgePoints!=null && edgePoints.containsKey(segment)){	
@@ -41,11 +41,11 @@ public class PicPrinter {
 				}
 			}
 		}
-		fh.saveNewImage(pixels);
+		fh.saveNewImage(pixels, filename);
 	}
 	
 	
-	public void generateImage(List<HashSet<Integer>> segments, FileHandler fh) {
+	public void generateImage(List<HashSet<Integer>> segments, FileHandler fh, String filename) {
 		System.out.println("Generating image");
 		Color[][] pixels = fh.getPixels();
 		int height = fh.getHeight();
@@ -80,7 +80,7 @@ public class PicPrinter {
 				t += 1;
 			}
 		}
-		fh.saveNewImage(pixels);
+		fh.saveNewImage(pixels, filename);
 	}
 
 	
