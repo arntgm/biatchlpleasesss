@@ -196,7 +196,6 @@ public class MasterEA {
 			genCounter++;
 		}
 			
-<<<<<<< HEAD
 		chromoTiers = fastNonDominatedSort(newPopulation);
 		List<Chromosome> top5 = new ArrayList<Chromosome>();
 		int tier = 0;
@@ -214,27 +213,7 @@ public class MasterEA {
 			pp.generateImage(top5.get(i).getSegments(), (HashMap)top5.get(i).getEdgeMap());
 			ImageDrawer.drawImage("saved"+i+".jpg");
 		}
-=======
 		
-//		int tier = 0;
-//		int n = 0;
-//		while (this.newPopulation.size() < population) {
-//			newPopulation.add(chromoTiers.get(tier).get(n));
-//			n ++;
-//			if (n > chromoTiers.get(tier).size()-1) {
-//				n = 0;
-//				tier ++;
-//			}
-//		}
-		
-		
-		//pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
-		//ImageDrawer.drawImage("saved.jpg");
-		System.out.println("kjæm sæ sjø");
-		System.out.println(eu.getChromosomeEdgeAndConn(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap())[1]);
-		pp.generateImage(oldPopulation.get(0).getSegments(), (HashMap)oldPopulation.get(0).getEdgeMap());
-		ImageDrawer.drawImage("saved.jpg");
->>>>>>> refs/remotes/origin/master
 	}
 	
 	public static void main(String[] args) {
