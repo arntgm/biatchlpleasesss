@@ -36,10 +36,11 @@ public class MasterEA {
 	private double mutationRate;
 	private Random r;
 	private Mutator mut;
+	private int tourneySize;
 	
-	private MasterEA(String filename, double crossover, double mutation) {
+	private MasterEA(String filename, double crossover, double mutation, String[] objectives, int tourney) {
 		//this.fh = new FileHandler(filename);
-		this.objectives = new String[] {"devi", "edge", "conn"};
+		this.objectives = objectives;
 		this.fh = new FileHandler(filename);
 		this.mst = new MinSpanTree(filename, fh);
 		this.eu = new Euclidian(fh.getWidth(), fh.getHeight(), fh.getPixels(), fh.getListPixels());
@@ -49,6 +50,7 @@ public class MasterEA {
 		this.mutationRate = mutation;
 		this.r = new Random();
 		this.mut = new Mutator();
+		this.tourneySize = tourney;
 	}
 	
 //	private void init() {
@@ -169,6 +171,28 @@ public class MasterEA {
 		return spawns;
 	}
 	
+	public Chromosome[] selection(List<Chromosome> population){
+		Chromosome[] sel = new Chromosome[2];
+		List<Chromosome> candidates = new ArrayList<Chromosome>();
+		for (int j = 0; j < sel.length; j++) {
+			for (int i = 0; i < this.tourneySize; i++) {
+				Chromosome newCand = population.get(r.nextInt(population.size()));
+				while(candidates.contains(newCand)){
+					newCand = population.get(r.nextInt(population.size()));
+				}
+				candidates.add(newCand);
+			}
+			Collections.sort(candidates, Chromosome.Comparators.TOTAL);
+			double threshold = r.nextDouble();
+			if(threshold<0.1){
+				sel[j] = candidates.remove(r.nextInt(candidates.size()));
+			}else{
+				sel[j] = candidates.remove(0);
+			}			
+		}
+		return sel;
+	}
+	
 	public List<Chromosome> makeNewPop(List<Chromosome> oldPop){
 		List<Chromosome> newPop = new ArrayList<Chromosome>();
 		while(newPop.size() < oldPop.size()) {
@@ -181,13 +205,15 @@ public class MasterEA {
 				children[0] = parents[0].copyChromo();
 				children[1] = parents[1].copyChromo();
 			}
-			cross = r.nextDouble();
 		}
 		for (Chromosome chromosome : newPop) {
 //			boolean update = false;
-			if(mut.mutateChromosome(chromosome, eu))
-				chromosome.updateAll(this.objectives);
+//			if(mut.mutateChromosome(chromosome, eu))
+//				chromosome.updateAll(this.objectives);
+			mut.mutateChromosome(chromosome, this.eu);
+			chromosome.updateAll(this.objectives);
 		}
+		return newPop;
 	}
 	
 	public void run(int population, int removeLimit, int minSegmentSize, int maxGenerations){
@@ -246,11 +272,13 @@ public class MasterEA {
 	
 	public static void main(String[] args) {
 		String filename = "Test_image_2";
+		String[] objectives = new String[] {"devi", "edge", "conn"};
 		int population = 2;
 		int mstRemoveLimit = 100;
 		int minSegmentSize = 150;
 		int maxGenerations = 15;
-		MasterEA m = new MasterEA(filename, 0.7, 0.001);
+		int tourneySize = 2; //binary
+		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize);
 		m.run(population, mstRemoveLimit, minSegmentSize, maxGenerations);
 		//MasterEA master = new MasterEA("Test_image");
 
