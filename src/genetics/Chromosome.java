@@ -205,6 +205,21 @@ public class Chromosome implements Comparable<Chromosome> {
 				return 0;
 			}
 		};
+		
+		public static Comparator<Chromosome> TOTAL = new Comparator<Chromosome>() {
+			public int compare(Chromosome c1, Chromosome c2) {
+				if (c1.nonDomRank < c2.nonDomRank)
+					return -1;
+				if (c1.nonDomRank > c2.nonDomRank)
+					return 1;
+				else
+					if (c1.crowdDist < c2.crowdDist)
+						return -1;
+					if (c1.crowdDist > c2.crowdDist)
+						return 1;
+				return 0;
+			}
+		};
 	}
 
 
