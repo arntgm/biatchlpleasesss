@@ -197,20 +197,19 @@ public class MasterEA {
 		}
 			
 		chromoTiers = fastNonDominatedSort(newPopulation);
-		List<Chromosome> top5 = new ArrayList<Chromosome>();
+		List<Chromosome> topSols = new ArrayList<Chromosome>();
 		int tier = 0;
 		int n = 0;
-		while (top5.size() < 5) {
-			top5.add(chromoTiers.get(tier).get(n));
+		while (topSols.size() < 5) {
+			topSols.add(chromoTiers.get(tier).get(n));
 			n++;
 			if (n > chromoTiers.get(tier).size() - 1) {
-				tier++;
-				n = 0;
+				break;
 			}
 		}
-		for (int i = 0; i < 5; i++) {
-//			System.out.println(eu.getChromosomeEdgeAndConn(top5.get(i).getSegments(), top5.get(i).getEdgeMap())[1]);
-			pp.generateImage(top5.get(i).getSegments(), (HashMap)top5.get(i).getEdgeMap());
+		for (int i = 0; i < topSols.size(); i++) {
+//			System.out.println(eu.getChromosomeEdgeAndConn(topSols.get(i).getSegments(), topSols.get(i).getEdgeMap())[1]);
+			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap());
 			ImageDrawer.drawImage("saved"+i+".jpg");
 		}
 		
