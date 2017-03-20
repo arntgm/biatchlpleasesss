@@ -33,11 +33,11 @@ public class SegmentHandler {
 	
 	
 	
-	public void mergeWithThreshold(List<HashSet<Integer>> segments, int threshold, ArrayList<HashSet<Integer>> toSeg){ //HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap,
+	public void mergeWithThreshold(int[] neighborArray, List<HashSet<Integer>> segments, int threshold, ArrayList<HashSet<Integer>> toSeg){ //HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap,
 		HashSet<HashSet<Integer>> removedSegments = new HashSet<HashSet<Integer>>();
 		for (HashSet<Integer> segment : segments) {			
 			if (segment.size() < threshold){
-				mergeToNeighbor(segment, segments, toSeg); //edgeMap
+				mergeToNeighbor(neighborArray, segment, segments, toSeg); //edgeMap
 				removedSegments.add(segment);
 			}
 		}
@@ -64,21 +64,40 @@ public class SegmentHandler {
 		edgeMap.put(neighborSeg, eu.getEdgeSet(neighborSeg, toSeg));
 	}
 	
-	public Integer getRandomEdge(HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
-		for (Integer gene : segment) {			
+	public Integer getRandomEdge(int[] neighborArray, HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
+		for (Integer gene : segment) {
+			if(segment.size()==1){
+//				neighborArray[gene] = neighbors.get(r.nextInt(neighbors.size()));
+				return gene;
+			}
+			ArrayList<Integer> sameSeg = new ArrayList<Integer>();
+			ArrayList<Integer> otherSeg = new ArrayList<Integer>();
+			boolean isEdge = false;
 			List<Integer> neighbors = eu.getNeighborNumbers(gene);
 			for (Integer neighbor : neighbors) {
-				if (!toSeg.get(neighbor).equals(segment)){
-					return gene;
+				if (!toSeg.get(neighbor).equals(segment)){ //point is an edge
+					isEdge = true;
+					otherSeg.add(neighbor);
+//					break;
+				}else{
+					sameSeg.add(neighbor);
 				}
 			}
-		}
-		System.out.println("uh oh - no neighbor found!");
+			if(isEdge){
+				for (Integer neigh : sameSeg) {
+					if(neighborArray[neigh]==gene || neighborArray[gene]==gene)
+//						neighborArray[gene] = otherSeg.get(r.nextInt(otherSeg.size())); //update gene string
+						return gene;
+				}
+			}
+			}
+//		System.out.println("uh oh - no neighbor found!");
+//		System.out.println("segment size was: "+segment.size());
 		return 0;
 	}
 	
-	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg){
-		Integer pixel = getRandomEdge(segment, toSeg);
+	public void mergeToNeighbor(int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg){
+		Integer pixel = getRandomEdge(neighborArray, segment, toSeg);
 		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
 		Integer neighbor = neighbors.get(r.nextInt(neighbors.size()));
 		HashSet<Integer> neighborSeg = toSeg.get(neighbor);
@@ -89,6 +108,8 @@ public class SegmentHandler {
 		}
 		for (Integer integer : segment) {
 			neighborSeg.add(integer);
+			toSeg.set(integer, neighborSeg);
+			neighborArray[pixel] = neighbor;
 		}
 	}
 	

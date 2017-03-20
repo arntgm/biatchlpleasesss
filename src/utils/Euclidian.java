@@ -59,21 +59,22 @@ public class Euclidian {
 		return edgeGenes;
 	}
 	
-	public float getChromosomeConnValue(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap){
+	public float getChromosomeConnValue(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap, ArrayList<HashSet<Integer>> toSeg){
 		float totEdgeValue = 0;
 		for (HashSet<Integer> segment : segments) {
-			totEdgeValue += getSegmentConnValue(segment, edgeMap.get(segment));
+			totEdgeValue += getSegmentConnValue(segment, edgeMap.get(segment), toSeg);
 		}
 		return totEdgeValue;
 	}
 	
-	public float getSegmentConnValue(HashSet<Integer> segment, HashSet<Integer> edgeSet){
+	public float getSegmentConnValue(HashSet<Integer> segment, HashSet<Integer> edgeSet, ArrayList<HashSet<Integer>> toSeg){
 		float segmentEdgeValue = 0;
 		for (Integer gene : edgeSet) {
 			float conn = 0;
 			List<Integer> neighbors = getNeighborNumbers(gene);
 			for (Integer neighbor : neighbors) {
-				if(!segment.contains(neighbor)){
+//				if(!segment.contains(neighbor)){
+				if(!toSeg.get(neighbor).equals(segment)){
 					conn +=1;
 					segmentEdgeValue += 1/conn;
 				}
@@ -102,12 +103,12 @@ public class Euclidian {
 		return segmentObjValues;
 	}
 	
-	public float getSegmentEdgeValue(HashSet<Integer> segment, HashSet<Integer> edgeSet){
+	public float getSegmentEdgeValue(HashSet<Integer> segment, HashSet<Integer> edgeSet, ArrayList<HashSet<Integer>> toSeg){
 		float segmentEdgeValue = 0;
 		for (Integer gene : edgeSet) {
 			List<Integer> neighbors = getNeighborNumbers(gene);
 			for (Integer neighbor : neighbors) {
-				if(!segment.contains(neighbor)){
+				if(!toSeg.get(neighbor).equals(segment)){
 					Color edgeColor = this.listPixels[gene];
 					Color neighborColor = this.listPixels[neighbor];
 					segmentEdgeValue -= getRGBEuclid(edgeColor, neighborColor);
@@ -127,10 +128,10 @@ public class Euclidian {
 		return totObjValues;
 	}
 	
-	public float getChromosomeEdgeValue(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap){
+	public float getChromosomeEdgeValue(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap, ArrayList<HashSet<Integer>> toSeg){
 		float totEdgeValue = 0;
 		for (HashSet<Integer> segment : segments) {
-			totEdgeValue += getSegmentEdgeValue(segment, edgeMap.get(segment));
+			totEdgeValue += getSegmentEdgeValue(segment, edgeMap.get(segment), toSeg);
 		}
 		return totEdgeValue;
 	}
@@ -183,13 +184,14 @@ public class Euclidian {
 			
 	}
 	
-	public static HashSet<Integer> getSegment(List<HashSet<Integer>> segments, int t) {
-		for (HashSet<Integer> segment : segments) {
-			if (segment.contains(t)) {
-				return segment;
-			}
-		}
-		return new HashSet<Integer>();
+	public static HashSet<Integer> getSegment(List<HashSet<Integer>> toSeg, int t) {
+//		for (HashSet<Integer> segment : segments) {
+//			if (segment.contains(t)) {
+//				return segment;
+//			}
+//		}
+//		return new HashSet<Integer>();
+		return toSeg.get(t);
 	}
 	
 	public int[] toGridCoords(int pos){
