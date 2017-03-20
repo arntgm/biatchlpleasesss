@@ -32,98 +32,122 @@ public class SegmentHandler {
 	
 	
 	
-	public void mergeWithThreshold(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap, int threshold){
+	public void mergeWithThreshold(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap, int threshold, ArrayList<HashSet<Integer>> toSeg){
 		HashSet<HashSet<Integer>> removedSegments = new HashSet<HashSet<Integer>>();
 		
-		for (Iterator<HashSet<Integer>> iterator = segments.iterator(); iterator.hasNext();) {
-			
-			HashSet<Integer> segment = (HashSet<Integer>) iterator.next();
-			
+		for (HashSet<Integer> segment : segments) {			
 			if (segment.size() < threshold){
-//				System.out.println("hei hei se her, segment: "+segment.toString());
-//				System.out.println("men finnes det i map? "+edgeMap.containsKey(segment));
-				mergeToNeighbor(segment, segments, edgeMap); //HashSet<Integer> changedSeg = 
+				mergeToNeighbor(segment, segments, edgeMap, toSeg); //HashSet<Integer> changedSeg = 
 				removedSegments.add(segment);
 			}
 		}
 		segments.removeAll(removedSegments);
 	}
 	
-	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap){
-//		HashSet<Integer> edges = eu.getEdgeSet(segment);
-//		System.out.println(segment.size());
+	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap, ArrayList<HashSet<Integer>> toSeg){
 		HashSet<Integer> edges = edgeMap.get(segment);
 		edgeMap.remove(segment);
-		
-//		System.out.println("size of edges is: "+edges.size());
 		Integer pixel = edges.iterator().next(); //random edge for merging
 		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
-		HashSet<Integer> neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
-//		System.out.println("getSegment worked!");
+		Integer neighbor = neighbors.get(r.nextInt(neighbors.size()));
+		HashSet<Integer> neighborSeg = toSeg.get(neighbor);
+//		HashSet<Integer> neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
 		while(neighborSeg == segment){
-			neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
-		}
+			neighbors.remove(neighbor);
+			neighbor = neighbors.get(r.nextInt(neighbors.size()));
+			neighborSeg = toSeg.get(neighbor);
+		} 	
 		edgeMap.remove(neighborSeg);
-//		System.out.println("managed to randomiiiize");
-//		neighborSeg.addAll(segment);
 		for (Integer integer : segment) {
 			neighborSeg.add(integer);
 		}
 		edgeMap.put(neighborSeg, eu.getEdgeSet(neighborSeg));
-//		return neighborSeg;
-//		System.out.println("nuuuhvel");
 	}
 	
-	public List<HashSet<Integer>> calculateSegments(int[] neighborArray) {
+//	public List<HashSet<Integer>> calculateSegments(int[] neighborArray, HashMap<Integer, HashSet<Integer>> segMap) {
+//		List<HashSet<Integer>> segments = new ArrayList<HashSet<Integer>>();
+//		Set<Integer> segment = new HashSet<Integer>();
+//		for (int i = 0; i < neighborArray.length; i++) {
+//			int next = neighborArray[i];
+//			segment.add(next);
+//			segMap.put(next, (HashSet<Integer>)segment);
+//			
+//			if(segment.contains(next) || next < i){
+//				
+//			}
+//		}
+//	}
+	
+	public List<HashSet<Integer>> calculateSegments(int[] neighborArray, ArrayList<HashSet<Integer>> toSeg) {
 //		System.out.println("Calculating segments");
+		long startTime = System.currentTimeMillis();
 		List<HashSet<Integer>> segments = new ArrayList<HashSet<Integer>>();
-		Set<Integer> segment = new HashSet<Integer>();
-//		Set<Integer> visited = new HashSet<Integer>();
-		Set<Integer> unvisited = new HashSet<Integer>();
+		HashSet<Integer> segment = new HashSet<Integer>();
+//		Set<Integer> unvisited = new HashSet<Integer>();
+		int unvisited = neighborArray.length;
+		boolean[] visited = new boolean[neighborArray.length];
 		for (int i = 0; i < neighborArray.length; i++) {
-			unvisited.add((Integer)i);
+			visited[i] = false;
+			toSeg.add(null);
 		}
 		int next = 0;
-		int old;
-//		while (visited.size() < neighborArray.length) {
-		while (!unvisited.isEmpty()){
+		int merge = 0;
+		int lastVisited = 0;
+		while(unvisited > 0){
 			segment.add((Integer)next);
-			unvisited.remove((Integer)next);
-//			visited.add((Integer)next);
-			old = next;
-			next = neighborArray[old];
-			if (segment.contains(next)) {
-				segments.add((HashSet<Integer>) segment);
-				segment = new HashSet<Integer>();
-				next = setNext((HashSet<Integer>)unvisited);
+			toSeg.set(next, segment);
+			visited[next] = true;
+			next = neighborArray[next];
+			unvisited-=1;
+			if (visited[next] || unvisited == 0){
+				if(toSeg.get(next) != null && !toSeg.get(next).equals(segment)){ //next is in another segment
+					mergeSegments(segment, next, toSeg);
+					merge+=1;
+				}else{ //next is in same segment
+//					System.out.println("added segment!");
+					segments.add(segment);
 				}
-			else if (!unvisited.contains(next)) {
-				mergeSegments(segments,(HashSet<Integer>) segment, next);
 				segment = new HashSet<Integer>();
-				next = setNext((HashSet<Integer>)unvisited);
+				next = setNext(visited, lastVisited);
+				lastVisited = next;
 			}
 		}
+		long totTime = System.currentTimeMillis()-startTime;
+		System.out.println("Calculating segments took: "+totTime+" miliseconds.");
+//		System.out.println("Merged: "+merge);
+//		System.out.println("Segments calculated");
 		return segments;
 	}
 	
 
 	
-	private int setNext(HashSet<Integer> unvisited) {
-		if (unvisited.isEmpty()) {
-			return 0;
-		}
-		return unvisited.iterator().next(); //grab first available element
-	}
-	
-	private void mergeSegments(List<HashSet<Integer>> segments, HashSet<Integer> segment, int next) {
-		for (HashSet<Integer> s : segments) {
-			if (s.contains(next)) {
-				s.addAll(segment);
-//				for (Integer integer : segment) {
-//					s.add(integer);
-//				}
-				return;
+	private int setNext(boolean[] visited, int lastVisited) {
+		for (int i = lastVisited; i < visited.length; i++) {
+			if(!visited[i]){
+				return i;
 			}
 		}
+		return 0;
+//		if (unvisited.isEmpty()) {
+//			return 0;
+//		}
+//		return unvisited.iterator().next(); //grab first available element
+	}
+	
+	//prev took in List<HashSet<Integer>> segments as arg
+	private void mergeSegments(HashSet<Integer> segment, int next, List<HashSet<Integer>> toSeg) { //HashMap<Integer, HashSet<Integer>> segMap
+		HashSet<Integer> toAdd = toSeg.get(next);
+		for (Integer integer : segment) {
+			toSeg.set(integer, toAdd);
+			toAdd.add(integer);
+		}
+//		toAdd.addAll(segment);
+//		for (HashSet<Integer> s : segments) {
+//			if (s.contains(next)) {
+//				s.addAll(segment);
+////				for (Integer integer : segment) {
+////					s.add(integer);
+////				}
+//				return;
 	}
 }
