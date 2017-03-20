@@ -233,7 +233,7 @@ public class MasterEA {
 		System.out.println("Initial chromosomes created");
 		boolean init = true;
 		for (Chromosome chrome : oldPopulation) {
-			System.out.println("Updating chromosome...");
+//			System.out.println("Updating chromosome...");
 			chrome.updateAll(this.objectives, this.minSegmentSize, init);
 		}
 		//TEST PRINTS
@@ -296,10 +296,10 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-		int population = 25;
-		int mstRemoveLimit = 25;
+		int population = 50;
+		int mstRemoveLimit = 50;
 		int minSegmentSize = 100;
-		int maxGenerations = 40;
+		int maxGenerations = 100;
 		int tourneySize = 2; //binary
 		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
