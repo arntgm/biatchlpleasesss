@@ -43,6 +43,25 @@ public class PicPrinter {
 		return fh.generateBufferedImage(pixels);
 	}
 	
+	public BufferedImage genKmeansImg(List<Integer> centr){
+		Color[][] pixels = fh.getPixels();
+		Color[] cols = new Color[7];
+		cols[0] = new Color(255, 0, 0);
+		cols[1] = new Color(0,0, 255);
+		cols[2] = new Color(0, 0, 0);
+		cols[3] = new Color(255,255,255);
+		cols[4] = new Color(100, 100, 100);
+		cols[5] = new Color(255, 150, 150);
+		cols[6] = new Color(0,255,0);
+		for (int i = 0; i < centr.size(); i++) {
+			int inte = centr.get(i);
+//			System.out.println(centr.indexOf(inte));
+			int[] coords = eu.toGridCoords(i);
+			pixels[coords[0]][coords[1]] = cols[inte];
+		}
+		return fh.generateBufferedImage(pixels);
+	}
+	
 	
 	public void generateImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints, String filename){
 		Color[][] pixels = fh.getPixels();
