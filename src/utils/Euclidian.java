@@ -41,7 +41,7 @@ public class Euclidian {
 		return neighbors;
 	}
 	
-	public HashSet<Integer> getEdgeSet(HashSet<Integer> segment){
+	public HashSet<Integer> getEdgeSet(HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
 		HashSet<Integer> edgeGenes = new HashSet<Integer>();
 		for (Integer gene : segment) {			
 //			System.out.println(gene);
@@ -50,7 +50,7 @@ public class Euclidian {
 //				System.out.println(integer);
 //			}
 			for (Integer neighbor : neighbors) {
-				if (!segment.contains(neighbor)){
+				if (!toSeg.get(neighbor).equals(segment)){
 					edgeGenes.add(gene);
 					break;
 				}

@@ -296,10 +296,10 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-		int population = 15;
-		int mstRemoveLimit = 20;
+		int population = 25;
+		int mstRemoveLimit = 16;
 		int minSegmentSize = 250;
-		int maxGenerations = 10;
+		int maxGenerations = 30;
 		int tourneySize = 2; //binary
 		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
