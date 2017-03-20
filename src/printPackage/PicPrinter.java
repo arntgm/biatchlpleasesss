@@ -61,7 +61,7 @@ public class PicPrinter {
 	}
 	
 	
-	public void generateImage(List<HashSet<Integer>> segments, FileHandler fh, String filename) {
+	public void generateImage(List<HashSet<Integer>> segments, ArrayList<HashSet<Integer>> toSeg, FileHandler fh, String filename) {
 		System.out.println("Generating image");
 		Color[][] pixels = fh.getPixels();
 		int height = fh.getHeight();
@@ -72,7 +72,7 @@ public class PicPrinter {
 		Color green = new Color(0, 255, 0);
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				HashSet<Integer> segment = utils.Euclidian.getSegment(segments, t);
+				HashSet<Integer> segment = utils.Euclidian.getSegment(toSeg, t);
 				if (i != 0) {
 					if (! segment.contains(t-width)) {
 						pixels[i][j] = green;

@@ -297,9 +297,9 @@ public class MasterEA {
 		String filename = "Test_image";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
 		int population = 25;
-		int mstRemoveLimit = 16;
-		int minSegmentSize = 250;
-		int maxGenerations = 30;
+		int mstRemoveLimit = 25;
+		int minSegmentSize = 100;
+		int maxGenerations = 40;
 		int tourneySize = 2; //binary
 		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
