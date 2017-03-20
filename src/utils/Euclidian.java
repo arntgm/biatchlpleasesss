@@ -43,8 +43,7 @@ public class Euclidian {
 	
 	public HashSet<Integer> getEdgeSet(HashSet<Integer> segment){
 		HashSet<Integer> edgeGenes = new HashSet<Integer>();
-		for (Iterator<Integer> iterator = segment.iterator(); iterator.hasNext();) {
-			Integer gene = (Integer) iterator.next();
+		for (Integer gene : segment) {			
 //			System.out.println(gene);
 			List<Integer> neighbors = getNeighborNumbers(gene);
 //			for (Integer integer : neighbors) {
@@ -94,7 +93,7 @@ public class Euclidian {
 				if(!segment.contains(neighbor)){
 					Color edgeColor = this.listPixels[gene];
 					Color neighborColor = this.listPixels[neighbor];
-					segmentObjValues[0] += getRGBEuclid(edgeColor, neighborColor);
+					segmentObjValues[0] -= getRGBEuclid(edgeColor, neighborColor);
 					penalty +=1;
 					segmentObjValues[1] += 1/penalty;
 				}
@@ -111,7 +110,7 @@ public class Euclidian {
 				if(!segment.contains(neighbor)){
 					Color edgeColor = this.listPixels[gene];
 					Color neighborColor = this.listPixels[neighbor];
-					segmentEdgeValue += getRGBEuclid(edgeColor, neighborColor);
+					segmentEdgeValue -= getRGBEuclid(edgeColor, neighborColor);
 				}
 			}
 		}

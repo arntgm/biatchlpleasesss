@@ -191,10 +191,12 @@ public class MasterEA {
 		System.out.println("Breeding new population...");
 		List<Chromosome> newPop = new ArrayList<Chromosome>();
 		while(newPop.size() < oldPop.size()) {
+			boolean crossed = false;
 			Chromosome[] parents = selection(oldPop);
 			Chromosome[] children = new Chromosome[2];
 			double cross = r.nextDouble();
 			if(cross <= this.crossoverRate){
+				crossed = true;
 				int[][] newGenes = mut.crossover(parents[0], parents[1]);
 //				System.out.println("length of gene used: "+newGenes[0].length);
 				children[0] = new Chromosome(newGenes[0], eu, sh);
@@ -205,14 +207,20 @@ public class MasterEA {
 			}
 			newPop.add(children[0]);
 			newPop.add(children[1]);
+			for (int i = 0; i < children.length; i++) {
+				Chromosome chromosome = children[i];
+				mut.mutateChromosome(chromosome, this.eu);
+				chromosome.updateAll(this.objectives, this.minSegmentSize, init);
+//				System.out.println("# of segments: "+chromosome.getSegments().size());
+//				if(mutated || crossed){					
+//				}
+			}
 		}
-		for (Chromosome chromosome : newPop) {
+//		for (Chromosome chromosome : newPop) {
 //			boolean update = false;
 //			if(mut.mutateChromosome(chromosome, eu))
 //				chromosome.updateAll(this.objectives);
-//			mut.mutateChromosome(chromosome, this.eu);
-			chromosome.updateAll(this.objectives, this.minSegmentSize, init);
-		}
+//		}
 		return newPop;
 	}
 	
@@ -283,16 +291,15 @@ public class MasterEA {
 			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved"+i+".jpg");
 			ImageDrawer.drawImage("saved"+i+".jpg");
 		}
-		
 	}
 	
 	public static void main(String[] args) {
-		String filename = "Test_image_2";
+		String filename = "Test_image";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-		int population = 12;
-		int mstRemoveLimit = 100;
+		int population = 15;
+		int mstRemoveLimit = 20;
 		int minSegmentSize = 250;
-		int maxGenerations = 20;
+		int maxGenerations = 10;
 		int tourneySize = 2; //binary
 		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
