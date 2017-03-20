@@ -112,8 +112,8 @@ public class Chromosome implements Comparable<Chromosome> {
 	public void updateAll(String[] objectives, int minSegSize, boolean init){
 		clearAll();
 		this.generateSegments();
-//		if(init)
-//			sh.mergeWithThreshold(this.segments, minSegSize, this.toSeg); // this.edgeMap, 
+		if(init)
+			sh.mergeWithThreshold(this.neighborArray, this.segments, minSegSize, this.toSeg); // this.edgeMap, 
 		this.generateEdgeMap();
 		this.generateCentroidMap();
 		for (int i = 0; i < objectives.length; i++) {
@@ -153,11 +153,11 @@ public class Chromosome implements Comparable<Chromosome> {
 	
 	// TODO Create update methods, to initialize and update objective values.
 	private double calcConn() {
-		return eu.getChromosomeConnValue(this.segments, this.edgeMap);
+		return eu.getChromosomeConnValue(this.segments, this.edgeMap, this.toSeg);
 	}
 
 	private double calcEdge() {
-		return eu.getChromosomeEdgeValue(this.segments, this.edgeMap);
+		return eu.getChromosomeEdgeValue(this.segments, this.edgeMap, this.toSeg);
 	}
 
 	private double calcDevi() {
