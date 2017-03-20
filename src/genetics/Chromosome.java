@@ -13,6 +13,7 @@ import java.util.Map;
 public class Chromosome implements Comparable<Chromosome> {
 
 	private int[] neighborArray;
+	private ArrayList<HashSet<Integer>> toSeg;
 	private List<HashSet<Integer>> segments;
 	private HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap;
 	private Map<HashSet<Integer>,Color> centroidMap;
@@ -48,6 +49,7 @@ public class Chromosome implements Comparable<Chromosome> {
 		this.edgeMap = new HashMap<HashSet<Integer>, HashSet<Integer>>();
 		this.centroidMap = new HashMap<HashSet<Integer>, Color>();
 		this.segments = new ArrayList<HashSet<Integer>>();
+		this.toSeg= new ArrayList<HashSet<Integer>>();
 		this.devi = 0;
 		this.conn = 0;
 		this.edge = 0;
@@ -58,6 +60,10 @@ public class Chromosome implements Comparable<Chromosome> {
 	
 	public void setEdgeMap(HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap){
 		this.edgeMap = edgeMap;
+	}
+	
+	public ArrayList<HashSet<Integer>> getSegmentMap(){
+		return this.toSeg;
 	}
 	
 	public HashMap<HashSet<Integer>,HashSet<Integer>> getEdgeMap(){
@@ -90,11 +96,13 @@ public class Chromosome implements Comparable<Chromosome> {
 	}
 	
 	public void generateSegments(){
-		this.segments = sh.calculateSegments(this.neighborArray);
+		this.segments = sh.calculateSegments(this.neighborArray, this.toSeg);
+//		System.out.println("# of segments: "+this.segments.size());
 	}
 	
 	public void clearAll(){
 		this.segments.clear();
+		this.toSeg.clear();
 		this.edgeMap.clear();
 		this.centroidMap.clear();
 		this.devi = 0;
@@ -106,7 +114,7 @@ public class Chromosome implements Comparable<Chromosome> {
 		clearAll();
 		this.generateSegments();
 		this.generateEdgeMap();
-		sh.mergeWithThreshold(getSegments(), getEdgeMap(), minSegSize);
+		sh.mergeWithThreshold(getSegments(), getEdgeMap(), minSegSize, this.toSeg);
 		this.generateCentroidMap();
 		for (int i = 0; i < objectives.length; i++) {
 			updateObjectiveValue(objectives[i]);
@@ -118,7 +126,7 @@ public class Chromosome implements Comparable<Chromosome> {
 		this.generateSegments();
 		this.generateEdgeMap();
 		if(init)
-			sh.mergeWithThreshold(getSegments(), getEdgeMap(), minSegSize);
+			sh.mergeWithThreshold(getSegments(), getEdgeMap(), minSegSize, this.toSeg);
 		this.generateCentroidMap();
 		for (int i = 0; i < objectives.length; i++) {
 			updateObjectiveValue(objectives[i]);
@@ -208,7 +216,6 @@ public class Chromosome implements Comparable<Chromosome> {
 					return 1;
 				return 0;
 			}
-			
 		};
 		
 		public static Comparator<Chromosome> CONN = new Comparator<Chromosome>() {

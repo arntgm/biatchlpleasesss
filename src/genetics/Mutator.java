@@ -2,6 +2,8 @@ package genetics;
 
 import utils.Euclidian;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -37,11 +39,11 @@ public class Mutator {
 	//Takes in Chromosome, returns the mutated neighborArray.
 	public boolean mutateChromosome(Chromosome p, Euclidian e) {
 		int[] genes = p.getNeighborArray();		
-		return mutateGenes(genes, e, p.getSegments());
+		return mutateGenes(genes, e, p.getSegments(), p.getSegmentMap());
 	}
 	
 	//mutates array in place
-	public boolean mutateGenes(int[] genes, Euclidian e, List<HashSet<Integer>> segments) {
+	public boolean mutateGenes(int[] genes, Euclidian e, List<HashSet<Integer>> segments, ArrayList<HashSet<Integer>> toSeg) {
 		boolean updateSegments = false;
 		int toNode;
 		List<Integer> neighbors;
@@ -49,8 +51,9 @@ public class Mutator {
 			if (rand.nextDouble()<0.001) {
 				neighbors = e.getNeighborNumbers(i);
 				toNode = neighbors.get(rand.nextInt(neighbors.size()-1));
-				if(!Euclidian.getSegment(segments, genes[i]).contains(toNode))
-					updateSegments = true;
+//				if(!Euclidian.getSegment(segments, genes[i]).contains(toNode))
+//				if(!toSeg.get(genes[i]).contains(toNode))
+//					updateSegments = true;
 				genes[i] = toNode;
 			}
 		}
