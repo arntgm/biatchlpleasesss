@@ -2,6 +2,7 @@ package printPackage;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,12 +33,11 @@ public class SegmentHandler {
 	
 	
 	
-	public void mergeWithThreshold(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap, int threshold, ArrayList<HashSet<Integer>> toSeg){
+	public void mergeWithThreshold(List<HashSet<Integer>> segments, int threshold, ArrayList<HashSet<Integer>> toSeg){ //HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap,
 		HashSet<HashSet<Integer>> removedSegments = new HashSet<HashSet<Integer>>();
-		
 		for (HashSet<Integer> segment : segments) {			
 			if (segment.size() < threshold){
-				mergeToNeighbor(segment, segments, edgeMap, toSeg); //HashSet<Integer> changedSeg = 
+				mergeToNeighbor(segment, segments, toSeg); //edgeMap
 				removedSegments.add(segment);
 			}
 		}
@@ -61,7 +61,35 @@ public class SegmentHandler {
 		for (Integer integer : segment) {
 			neighborSeg.add(integer);
 		}
-		edgeMap.put(neighborSeg, eu.getEdgeSet(neighborSeg));
+		edgeMap.put(neighborSeg, eu.getEdgeSet(neighborSeg, toSeg));
+	}
+	
+	public Integer getRandomEdge(HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
+		for (Integer gene : segment) {			
+			List<Integer> neighbors = eu.getNeighborNumbers(gene);
+			for (Integer neighbor : neighbors) {
+				if (!toSeg.get(neighbor).equals(segment)){
+					return gene;
+				}
+			}
+		}
+		System.out.println("uh oh - no neighbor found!");
+		return 0;
+	}
+	
+	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg){
+		Integer pixel = getRandomEdge(segment, toSeg);
+		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
+		Integer neighbor = neighbors.get(r.nextInt(neighbors.size()));
+		HashSet<Integer> neighborSeg = toSeg.get(neighbor);
+		while(neighborSeg.equals(segment)){
+			neighbors.remove(neighbor);
+			neighbor = neighbors.get(r.nextInt(neighbors.size()));
+			neighborSeg = toSeg.get(neighbor);
+		}
+		for (Integer integer : segment) {
+			neighborSeg.add(integer);
+		}
 	}
 	
 //	public List<HashSet<Integer>> calculateSegments(int[] neighborArray, HashMap<Integer, HashSet<Integer>> segMap) {
