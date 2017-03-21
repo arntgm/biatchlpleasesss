@@ -3,6 +3,7 @@ package printPackage;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,8 +11,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import genetics.Chromosome;
 import mst.FileHandler;
 import utils.Euclidian;
+import utils.SizeComparator;
 
 public class SegmentHandler {
 	
@@ -31,6 +34,18 @@ public class SegmentHandler {
 //		this.neighborArray = neighborArray;
 //	}
 	
+	public void mergeToLimit(Chromosome c, int limit, String[] objectives){
+		List<HashSet<Integer>> segments = c.getSegments();
+		System.out.println("initial size: "+segments.size());
+		while(segments.size()>limit){
+			Collections.sort(segments, new SizeComparator());
+			mergeToNeighbor(c.getNeighborArray(),segments.get(0),segments, c.getSegmentMap());
+			c.updateAll(objectives, 0, false);
+			segments = c.getSegments();
+			System.out.println("new size: "+c.getSegments().size());
+		}
+	}
+	
 	
 	
 	public void mergeWithThreshold(int[] neighborArray, List<HashSet<Integer>> segments, int threshold, ArrayList<HashSet<Integer>> toSeg){ //HashMap<HashSet<Integer>,HashSet<Integer>> edgeMap,
@@ -44,25 +59,25 @@ public class SegmentHandler {
 		segments.removeAll(removedSegments);
 	}
 	
-	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap, ArrayList<HashSet<Integer>> toSeg){
-		HashSet<Integer> edges = edgeMap.get(segment);
-		edgeMap.remove(segment);
-		Integer pixel = edges.iterator().next(); //random edge for merging
-		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
-		Integer neighbor = neighbors.get(r.nextInt(neighbors.size()));
-		HashSet<Integer> neighborSeg = toSeg.get(neighbor);
-//		HashSet<Integer> neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
-		while(neighborSeg == segment){
-			neighbors.remove(neighbor);
-			neighbor = neighbors.get(r.nextInt(neighbors.size()));
-			neighborSeg = toSeg.get(neighbor);
-		} 	
-		edgeMap.remove(neighborSeg);
-		for (Integer integer : segment) {
-			neighborSeg.add(integer);
-		}
-		edgeMap.put(neighborSeg, eu.getEdgeSet(neighborSeg, toSeg));
-	}
+//	public void mergeToNeighbor(HashSet<Integer> segment, List<HashSet<Integer>>segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap, ArrayList<HashSet<Integer>> toSeg){
+//		HashSet<Integer> edges = edgeMap.get(segment);
+//		edgeMap.remove(segment);
+//		Integer pixel = edges.iterator().next(); //random edge for merging
+//		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
+//		Integer neighbor = neighbors.get(r.nextInt(neighbors.size()));
+//		HashSet<Integer> neighborSeg = toSeg.get(neighbor);
+////		HashSet<Integer> neighborSeg = utils.Euclidian.getSegment(segments,neighbors.get(r.nextInt(neighbors.size())));
+//		while(neighborSeg == segment){
+//			neighbors.remove(neighbor);
+//			neighbor = neighbors.get(r.nextInt(neighbors.size()));
+//			neighborSeg = toSeg.get(neighbor);
+//		} 	
+//		edgeMap.remove(neighborSeg);
+//		for (Integer integer : segment) {
+//			neighborSeg.add(integer);
+//		}
+//		edgeMap.put(neighborSeg, eu.getEdgeSet(neighborSeg, toSeg));
+//	}
 	
 	public Integer getRandomEdge(int[] neighborArray, HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
 		for (Integer gene : segment) {
@@ -102,6 +117,8 @@ public class SegmentHandler {
 		Integer neighbor = neighbors.get(r.nextInt(neighbors.size()));
 		HashSet<Integer> neighborSeg = toSeg.get(neighbor);
 		while(neighborSeg.equals(segment)){
+			if(neighbors.size()<2)
+				break; //hot fix bro	
 			neighbors.remove(neighbor);
 			neighbor = neighbors.get(r.nextInt(neighbors.size()));
 			neighborSeg = toSeg.get(neighbor);
