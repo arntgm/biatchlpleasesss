@@ -25,6 +25,7 @@ public class ImageDrawer {
 	        frame.setLayout(new FlowLayout());
 	        frame.setSize(img.getWidth(), img.getHeight()+100);;
 	        JLabel lbl=new JLabel();
+	        lbl.setText("Bildeeee");
 	        lbl.setIcon(icon);
 	        frame.add(lbl);
 	        frame.setVisible(true);
