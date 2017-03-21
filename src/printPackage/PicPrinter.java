@@ -29,6 +29,18 @@ public class PicPrinter {
 	
 	public BufferedImage generateBufferedImage(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints){
 		Color[][] pixels = fh.getPixels();
+		int height = fh.getHeight();
+		int width = fh.getWidth();
+		for (int i = 0; i < height; i+=(height-1)) {
+			for (int j = 0; j < width; j++) {
+				pixels[i][j] = this.green;
+			}
+		}
+		for (int j = 0; j < width; j+=(width-1)) {
+			for (int i = 0; i < height; i++) {
+				pixels[i][j] = this.green;
+			}
+		}
 		for (HashSet<Integer> segment : segments) {
 			if(edgePoints!=null && edgePoints.containsKey(segment)){	
 				if(!edgePoints.get(segment).isEmpty()){
@@ -36,6 +48,34 @@ public class PicPrinter {
 					for (Integer integer : edgePoints.get(segment)) {
 						int[] coords = eu.toGridCoords(integer);
 						pixels[coords[0]][coords[1]] = this.green;
+					}
+				}
+			}
+		}
+		return fh.generateBufferedImage(pixels);
+	}
+	
+	public BufferedImage generateBufferedBlackAndWhite(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints){
+		int height = fh.getHeight();
+		int width = fh.getWidth();
+		Color black = new Color(0,0,0);
+		Color white = new Color(255,255,255);
+		Color[][] pixels = new Color[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (i == 0 || j == 0 || i == height-1 || j == width-1)
+					pixels[i][j] = black;
+				else
+					pixels[i][j] = white;
+			}
+		}
+		for (HashSet<Integer> segment : segments) {
+			if(edgePoints!=null && edgePoints.containsKey(segment)){	
+				if(!edgePoints.get(segment).isEmpty()){
+					
+					for (Integer integer : edgePoints.get(segment)) {
+						int[] coords = eu.toGridCoords(integer);
+						pixels[coords[0]][coords[1]] = black;
 					}
 				}
 			}
@@ -72,6 +112,31 @@ public class PicPrinter {
 					for (Integer integer : edgePoints.get(segment)) {
 						int[] coords = eu.toGridCoords(integer);
 						pixels[coords[0]][coords[1]] = this.green;
+					}
+				}
+			}
+		}
+		fh.saveNewImage(pixels, filename);
+	}
+	
+	public void generateBlackAndWhite(List<HashSet<Integer>> segments, HashMap<HashSet<Integer>, HashSet<Integer>> edgePoints, String filename) {
+		int height = fh.getHeight();
+		int width = fh.getWidth();
+		Color black = new Color(0,0,0);
+		Color white = new Color(255,255,255);
+		Color[][] pixels = new Color[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				pixels[i][j] = white;
+			}
+		}
+		for (HashSet<Integer> segment : segments) {
+			if(edgePoints!=null && edgePoints.containsKey(segment)){	
+				if(!edgePoints.get(segment).isEmpty()){
+					
+					for (Integer integer : edgePoints.get(segment)) {
+						int[] coords = eu.toGridCoords(integer);
+						pixels[coords[0]][coords[1]] = black;
 					}
 				}
 			}
