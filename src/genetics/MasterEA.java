@@ -301,17 +301,11 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-<<<<<<< HEAD
-		int population = 6;
-		int mstRemoveLimit = 30;
-		int minSegmentSize = 100;
-		int maxGenerations = 200;
-=======
+
 		int population = 50;
 		int mstRemoveLimit = 50;
 		int minSegmentSize = 100;
 		int maxGenerations = 100;
->>>>>>> refs/remotes/origin/master
 		int tourneySize = 2; //binary
 		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
