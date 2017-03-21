@@ -84,9 +84,9 @@ public class MasterEA {
 			p.dominatedByCounter = 0;
 			for (Chromosome q : pop) {
 				dom = dominates(p,q);
-				if (dom == 3) {
+				if (dom == objectives.length) {
 					p.dominationList.add(q);
-				} else if (dom == -3) {
+				} else if (dom == -objectives.length) {
 					p.dominatedByCounter += 1;
 				}
 			}
@@ -354,8 +354,12 @@ public class MasterEA {
 //			pp.generateBlackAndWhite(c.getSegments(), (HashMap)c.getEdgeMap(), "saved_BW_"+i+".jpg");
 //			ImageDrawer.drawImage(c.getSegments().size()+"segments.jpg");
 //			ImageDrawer.drawImage("saved_BW_"+i+".jpg");
-			ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"segments.jpg");
-			ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"segments.jpg");
+			String[] values = new String[objectives.length];
+			for (int j = 0; j < objectives.length; j++) {
+				values[j] = c.getObjectiveValue(objectives[j]) + "";
+			}
+			ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
+			ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
 		}
 		String[] cmd = {
 			      "python",
