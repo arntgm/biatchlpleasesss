@@ -153,17 +153,19 @@ public class Kmeans {
 				if(Kseg.get(neighbor) == Kseg.get(i)){
 						if(visited[neighbor]){
 							genes[i] = neighbor;
-							System.out.println("neighbor for "+i+" set to "+neighbor);
+//							System.out.println("neighbor for "+i+" set to "+neighbor);
 							segments.set(i, seg);
-							seg++;
+//							seg++;
 							wasSet = true;
 							break;
 						}
+				}
 			}
 			if(!wasSet){
+				Collections.shuffle(neighbors);
 				for (Integer neigh : neighbors) {
 					if(Kseg.get(neigh) == Kseg.get(i)){
-						genes[i] = neighbor;
+						genes[i] = neigh;
 						segments.set(i, seg);
 						seg++;
 						wasSet = true;
@@ -177,7 +179,6 @@ public class Kmeans {
 				segments.set(i, seg);
 				seg++;
 			}
-			}
 		}
 		System.out.println("lonely pixels: "+lonely);
 
@@ -185,16 +186,18 @@ public class Kmeans {
 	}
 	
 	public static void main(String[] args) {
-		FileHandler f = new FileHandler("Test_image_3");
+		FileHandler f = new FileHandler("Test_image");
 //		ImageDrawer id = new ImageDrawer();
 		Euclidian eu = new Euclidian(f.getWidth(), f.getHeight(), f.getPixels(), f.getListPixels());
 		SegmentHandler sh = new SegmentHandler(f, eu);
 		PicPrinter pp = new PicPrinter(f, eu);
 		Kmeans k = new Kmeans(f, eu);
 		ArrayList<Integer> clusters = k.getKmeans(4, 20);
+		System.out.println("cluster length: "+clusters.size());
 		int[] genes = k.getKgenes(clusters);
 		Chromosome c = new Chromosome(genes, eu, sh);
 		c.updateAll(new String[] {"devi", "edge", "conn"}, 200, true);
+		System.out.println("# of segments after update = "+c.getSegments().size());
 		ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()));
 		System.out.println(clusters.size());
 		ImageDrawer.drawImage(pp.genKmeansImg(clusters));
