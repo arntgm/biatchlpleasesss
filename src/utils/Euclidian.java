@@ -24,17 +24,17 @@ public class Euclidian {
 	
 	public List<Integer> getNeighborNumbers(Integer gene){
 		List<Integer> neighbors = new ArrayList<Integer>();
-		if (Math.floorDiv(gene, this.width)!= 0) {
-			neighbors.add(gene-this.width);
+		if ((gene+1)%this.width != 0) {
+			neighbors.add(gene+1);
 		}
 		if (Math.floorDiv(gene, this.width)!=this.height-1) {
 			neighbors.add(gene+this.width);
 		}
+		if (Math.floorDiv(gene, this.width)!= 0) {
+			neighbors.add(gene-this.width);
+		}
 		if (gene%this.width != 0) {
 			neighbors.add(gene-1);
-		}
-		if ((gene+1)%this.width != 0) {
-			neighbors.add(gene+1);
 		}
 //		System.out.println("Node: "+gene);
 //		System.out.println("Neighbors: "+neighbors.toString());
