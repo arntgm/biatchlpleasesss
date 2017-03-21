@@ -120,6 +120,7 @@ public class Chromosome implements Comparable<Chromosome> {
 			updateObjectiveValue(objectives[i]);
 		}
 	}
+	
 
 	
 	public void setCrowdDist(double crowdDist) {
