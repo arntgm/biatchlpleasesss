@@ -183,6 +183,12 @@ public class SegmentHandler {
 //		}
 //	}
 	
+//	for (Integer integer : segment) {
+//	neighborSeg.add(integer);
+//	toSeg.set(integer, neighborSeg);
+//	neighborArray[pixel] = neighbor;
+//}
+	
 	public List<HashSet<Integer>> calculateSegments(int[] neighborArray, ArrayList<HashSet<Integer>> toSeg) {
 //		System.out.println("Calculating segments");
 		long startTime = System.currentTimeMillis();
