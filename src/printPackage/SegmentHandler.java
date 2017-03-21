@@ -38,12 +38,13 @@ public class SegmentHandler {
 		List<HashSet<Integer>> segments = c.getSegments();
 		for (HashSet<Integer> segment : segments) {
 			HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(segment, c.getSegmentMap());
-			if(c.getCentroidMap().containsKey(segment)){
+			try{
+//			if(c.getCentroidMap().containsKey(segment)){
 				Color segCentr = c.getCentroidMap().get(segment);
 				double minDist = Double.MAX_VALUE;
 				HashSet<Integer> closest = null;
 				for (HashSet<Integer> neighborSeg : neighborSegs.keySet()) {
-					if(c.getCentroidMap().containsKey(neighborSeg)){
+//					if(c.getCentroidMap().containsKey(neighborSeg)){
 						Color neighCentr = c.getCentroidMap().get(neighborSeg);
 	//				if(!neighCentr.equals(null)){
 						double newDist = eu.getRGBEuclid(segCentr, neighCentr);
@@ -52,7 +53,7 @@ public class SegmentHandler {
 							closest = neighborSeg;
 	//					}
 						}
-					}
+//					}
 				}
 				if(minDist<threshold){
 //					System.out.println("Centroid merge!");
@@ -72,6 +73,7 @@ public class SegmentHandler {
 						}
 					}
 				}
+			}catch(Exception e){
 			}
 		}
 	}
@@ -85,6 +87,7 @@ public class SegmentHandler {
 				if(!neighborSeg.equals(segment)){
 					neighborSegs.put(neighborSeg, new Integer[]{pixel, neighbor});
 				}
+//				break;
 			}
 		}
 		int i = 0;
