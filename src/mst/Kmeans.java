@@ -191,11 +191,8 @@ public class Kmeans {
 		SegmentHandler sh = new SegmentHandler(f, eu);
 		PicPrinter pp = new PicPrinter(f, eu);
 		Kmeans k = new Kmeans(f, eu);
-<<<<<<< HEAD
-		ArrayList<Integer> clusters = k.getKmeans(10, 20);
-=======
+
 		ArrayList<Integer> clusters = k.getKmeans(7, 20);
->>>>>>> refs/remotes/origin/master
 		System.out.println("Clusters size "+clusters.size());
 		int[] genes = k.getKgenes(clusters);
 		for (int i = 0; i < 20; i++) {

@@ -251,6 +251,7 @@ public class MasterEA {
 		for (Chromosome chrome : oldPopulation) {
 //			System.out.println("Updating chromosome...");
 			chrome.updateAll(this.objectives, this.minSegmentSize, init);
+			
 		}
 		//TEST PRINTS
 		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
