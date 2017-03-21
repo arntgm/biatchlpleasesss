@@ -233,13 +233,13 @@ public class MasterEA {
 		return newPop;
 	}
 	
-	public void run(int population, int removeLimit, int maxGenerations){
+	public void run(int population, int removeLimit, int maxGenerations) throws IOException{
 		int genCounter = 0;
 		
 		
 		//create pop using Kmeans
 		List<int[]> pop = new ArrayList<int[]>();
-		for (int i = 2; i < 5; i++) {
+		for (int i = 2; i < 4; i++) {
 			for (int j = 0; j < 2; j++) {
 				List<Integer> kmeans = km.getKmeans(i, 20);
 				pop.add(km.getKgenes(kmeans));
@@ -338,23 +338,41 @@ public class MasterEA {
 				break;
 			}
 		}
+		double[] x = new double[topSols.size()];
+		double[] y = new double[topSols.size()];
+		double[] z = new double[topSols.size()];
 		for (int i = 0; i < topSols.size(); i++) {
 			int limit = 20+r.nextInt(10);
+			Chromosome c = topSols.get(i);
+			x[i] = c.getObjectiveValue("devi");
+			y[i] = c.getObjectiveValue("conn");
+			z[i] = c.getObjectiveValue("edge");
 //			System.out.println(eu.getChromosomeEdgeAndConn(topSols.get(i).getSegments(), topSols.get(i).getEdgeMap())[1]);
-			sh.mergeToLimit(topSols.get(i), limit, this.objectives);
-			System.out.println("Number of segments in solution: "+topSols.get(i).getSegments().size());
-			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved"+i+".jpg");
-			pp.generateBlackAndWhite(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved_BW_"+i+".jpg");
-			ImageDrawer.drawImage("saved"+i+".jpg");
-			ImageDrawer.drawImage("saved_BW_"+i+".jpg");
+			sh.mergeToLimit(c, limit, this.objectives);
+			System.out.println("Number of segments in solution: "+c.getSegments().size());
+//			pp.generateImage(c.getSegments(), (HashMap)c.getEdgeMap(), "saved"+i+".jpg");
+//			pp.generateBlackAndWhite(c.getSegments(), (HashMap)c.getEdgeMap(), "saved_BW_"+i+".jpg");
+//			ImageDrawer.drawImage(c.getSegments().size()+"segments.jpg");
+//			ImageDrawer.drawImage("saved_BW_"+i+".jpg");
+			ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"segments.jpg");
+			ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"segments.jpg");
 		}
+		String[] cmd = {
+			      "python",
+			      "C:\\Users\\Bendik\\git\\biatchlpleasesss\\paretoPlot.py",
+			      x.toString(),
+			      y.toString(),
+			      z.toString(),
+			    };
+			    Runtime.getRuntime().exec(cmd);
 	}
 	
-	public static void main(String[] args) {
-		String filename = "Test_image_6";
+	public static void main(String[] args) throws IOException {
+		
+		String filename = "Test_image_2";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
 
-		int population = 6;
+		int population = 4;
 		int mstRemoveLimit = 60;
 		int minSegmentSize = 200;
 		int maxGenerations = 0;
