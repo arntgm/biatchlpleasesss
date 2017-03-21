@@ -113,7 +113,8 @@ public class Chromosome implements Comparable<Chromosome> {
 		clearAll();
 		this.generateSegments();
 		if(init)
-			sh.mergeWithThreshold(this.neighborArray, this.segments, minSegSize, this.toSeg); // this.edgeMap, 
+			sh.mergeWithThreshold(this.neighborArray, this.segments, minSegSize, this.toSeg); // this.edgeMap,
+			this.generateSegments();
 		this.generateEdgeMap();
 		this.generateCentroidMap();
 		for (int i = 0; i < objectives.length; i++) {

@@ -239,8 +239,8 @@ public class MasterEA {
 		
 		//create pop using Kmeans
 		List<int[]> pop = new ArrayList<int[]>();
-		for (int i = 3; i < 8; i++) {
-			for (int j = 0; j < 4; j++) {
+		for (int i = 2; i < 12; i++) {
+			for (int j = 0; j < 2; j++) {
 				List<Integer> kmeans = km.getKmeans(i, 20);
 				pop.add(km.getKgenes(kmeans));
 			}
@@ -248,38 +248,47 @@ public class MasterEA {
 
 		
 		//		create pop using MST
-		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
-		int[] genes = this.mst.getGenes(MST);
-		pop.addAll(this.mst.generateGeneArrays(20, removeLimit, MST, genes));
-		System.out.println("pop: "+pop.size());
+//		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
+//		int[] genes = this.mst.getGenes(MST);
+//		pop.addAll(this.mst.generateGeneArrays(20, removeLimit, MST, genes));
+//		System.out.println("pop: "+pop.size());
 		
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
 		System.out.println("Initial chromosomes created");
 		boolean init = true;
+		
+		
 		for (Chromosome chrome : oldPopulation) {
 //			System.out.println("Updating chromosome...");
-			chrome.updateAll(this.objectives, this.minSegmentSize, init);
-			
+			chrome.updateAll(this.objectives, this.minSegmentSize, init); //init
 		}
-		//TEST PRINTS
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+		System.out.println("merging centroids.. ");
+		for (Chromosome c : oldPopulation) {
+			System.out.println("Merging centroids for chromosome "+oldPopulation.indexOf(c));
+			for (int i = 0; i < 2; i++) {
+				sh.mergeCentroids(c, 80-10*i);
+				c.updateAll(objectives, this.minSegmentSize, false);
+//				ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+			}
+		}
 		System.out.println("merging....");
 //		sh.mergeToLimit(oldPopulation.get(0), 15, this.objectives);
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(3).getSegments(), oldPopulation.get(3).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(4).getSegments(), oldPopulation.get(4).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(5).getSegments(), oldPopulation.get(5).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(6).getSegments(), oldPopulation.get(6).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(3).getSegments(), oldPopulation.get(3).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(4).getSegments(), oldPopulation.get(4).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(5).getSegments(), oldPopulation.get(5).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(6).getSegments(), oldPopulation.get(6).getEdgeMap()));
 
 		
-		System.out.println("All chromosomes updated. Sorting...");
-		this.chromoTiers = fastNonDominatedSort(oldPopulation);
-		oldPopulation.clear();
-		for (List<Chromosome> tier : chromoTiers) {
-			this.oldPopulation.addAll(tier);
-		}
-		newPopulation = makeNewPop(oldPopulation, init);
+//		System.out.println("All chromosomes updated. Sorting...");
+//		this.chromoTiers = fastNonDominatedSort(oldPopulation);
+//		oldPopulation.clear();
+//		for (List<Chromosome> tier : chromoTiers) {
+//			this.oldPopulation.addAll(tier);
+//		}
+//		newPopulation = makeNewPop(oldPopulation, init);
 		
 
 		genCounter++;
@@ -305,8 +314,8 @@ public class MasterEA {
 			newPopulation = makeNewPop(oldPopulation, init);
 			genCounter++;
 		}
-		chromoTiers.clear();
-		chromoTiers = fastNonDominatedSort(newPopulation);
+//		chromoTiers.clear();
+		chromoTiers = fastNonDominatedSort(oldPopulation);
 		List<Chromosome> topSols = new ArrayList<Chromosome>();
 		int tier = 0;
 		int n = 0;
@@ -318,8 +327,9 @@ public class MasterEA {
 			}
 		}
 		for (int i = 0; i < topSols.size(); i++) {
+			int limit = 20+r.nextInt(10);
 //			System.out.println(eu.getChromosomeEdgeAndConn(topSols.get(i).getSegments(), topSols.get(i).getEdgeMap())[1]);
-//			sh.mergeToLimit(topSols.get(i), topSols.get(i).getSegments().size()-15, this.objectives);
+			sh.mergeToLimit(topSols.get(i), limit, this.objectives);
 			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved"+i+".jpg");
 			ImageDrawer.drawImage("saved"+i+".jpg");
 		}
@@ -329,10 +339,10 @@ public class MasterEA {
 		String filename = "Test_image_2";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
 
-		int population = 40;
+		int population = 20;
 		int mstRemoveLimit = 60;
 		int minSegmentSize = 200;
-		int maxGenerations = 30;
+		int maxGenerations = 0;
 		int tourneySize = 2; //binary
 		double mutateGene = 0;
 		double mutateSeg = 0.1;
