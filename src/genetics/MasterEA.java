@@ -217,7 +217,7 @@ public class MasterEA {
 				mut.mutateChromosome(chromosome, this.eu); //gene mutation
 				double mutateChrom = r.nextDouble();
 				if(mutateChrom < this.chromMutRate){ //chromosome mutation
-					sh.mergeToLimit(chromosome, chromosome.getSegments().size(), objectives);
+//					sh.mergeToLimit(chromosome, chromosome.getSegments().size(), objectives);
 				}
 				chromosome.updateAll(this.objectives, this.minSegmentSize, init);
 //				System.out.println("# of segments: "+chromosome.getSegments().size());
@@ -236,10 +236,6 @@ public class MasterEA {
 	public void run(int population, int removeLimit, int maxGenerations){
 		int genCounter = 0;
 		
-		//create pop using MST
-//		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
-//		int[] genes = this.mst.getGenes(MST);
-//		List<int[]> pop = this.mst.generateGeneArrays2(population, removeLimit, MST, genes);
 		
 		//create pop using Kmeans
 		List<int[]> pop = new ArrayList<int[]>();
@@ -249,6 +245,12 @@ public class MasterEA {
 				pop.add(km.getKgenes(kmeans));
 			}
 		}
+
+		
+		//		create pop using MST
+		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
+		int[] genes = this.mst.getGenes(MST);
+		pop.addAll(this.mst.generateGeneArrays(20, removeLimit, MST, genes));
 		System.out.println("pop: "+pop.size());
 		
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
@@ -262,13 +264,13 @@ public class MasterEA {
 		//TEST PRINTS
 		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
 		System.out.println("merging....");
-		sh.mergeToLimit(oldPopulation.get(0), 13, this.objectives);
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+//		sh.mergeToLimit(oldPopulation.get(0), 15, this.objectives);
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(3).getSegments(), oldPopulation.get(3).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(4).getSegments(), oldPopulation.get(4).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(5).getSegments(), oldPopulation.get(5).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(6).getSegments(), oldPopulation.get(6).getEdgeMap()));
 
 		
 		System.out.println("All chromosomes updated. Sorting...");
@@ -317,19 +319,20 @@ public class MasterEA {
 		}
 		for (int i = 0; i < topSols.size(); i++) {
 //			System.out.println(eu.getChromosomeEdgeAndConn(topSols.get(i).getSegments(), topSols.get(i).getEdgeMap())[1]);
+//			sh.mergeToLimit(topSols.get(i), topSols.get(i).getSegments().size()-15, this.objectives);
 			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved"+i+".jpg");
 			ImageDrawer.drawImage("saved"+i+".jpg");
 		}
 	}
 	
 	public static void main(String[] args) {
-		String filename = "Test_image";
+		String filename = "Test_image_2";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
 
-		int population = 20;
-		int mstRemoveLimit = 50;
+		int population = 40;
+		int mstRemoveLimit = 60;
 		int minSegmentSize = 200;
-		int maxGenerations = 20;
+		int maxGenerations = 30;
 		int tourneySize = 2; //binary
 		double mutateGene = 0;
 		double mutateSeg = 0.1;
