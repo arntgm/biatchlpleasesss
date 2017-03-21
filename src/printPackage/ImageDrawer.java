@@ -25,20 +25,21 @@ public class ImageDrawer {
 	        frame.setLayout(new FlowLayout());
 	        frame.setSize(img.getWidth(), img.getHeight()+100);;
 	        JLabel lbl=new JLabel();
-	        lbl.setText("Bildeeee");
+	        lbl.setText(filename);
 	        lbl.setIcon(icon);
 	        frame.add(lbl);
 	        frame.setVisible(true);
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    }
 	    
-	    public static void drawImage(BufferedImage img){
+	    public static void drawImage(BufferedImage img, String title){
 //	        BufferedImage img;
 	        ImageIcon icon=new ImageIcon(img);
 	        JFrame frame=new JFrame();
 	        frame.setLayout(new FlowLayout());
 	        frame.setSize(img.getWidth(), img.getHeight()+100);;
 	        JLabel lbl=new JLabel();
+	        lbl.setText(title);
 	        lbl.setIcon(icon);
 	        frame.add(lbl);
 	        frame.setVisible(true);
