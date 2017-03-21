@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -361,21 +362,22 @@ public class MasterEA {
 			ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
 			ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
 		}
+		String xx = Arrays.toString(x);
+		String yy = Arrays.toString(y);
+		String zz = Arrays.toString(z);
 		String[] cmd = {
 			      "python",
 			      "C:\\Users\\Bendik\\git\\biatchlpleasesss\\paretoPlot.py",
-			      x.toString(),
-			      y.toString(),
-			      z.toString(),
+			      xx.substring(1,xx.length()-1),
+			      yy.substring(1,yy.length()-1),
+			      zz.substring(1, zz.length()-1),
 			    };
 			    Runtime.getRuntime().exec(cmd);
 	}
 	
 	public static void main(String[] args) throws IOException {
-		
 		String filename = "Test_image_2";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-
 		int population = 4;
 		int mstRemoveLimit = 60;
 		int minSegmentSize = 200;

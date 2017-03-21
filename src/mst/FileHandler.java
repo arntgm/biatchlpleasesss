@@ -3,7 +3,9 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -106,9 +108,26 @@ public class FileHandler {
 		}
 	}
 	
-	public static void main(String[] args) {
-		FileHandler fh = new FileHandler("Test_image");
-		System.out.println(fh.getHeight());
+	public static void main(String[] args) throws IOException {
+		int[] x = new int[]{1,2,3};
+//		List<Integer> x = new ArrayList<Integer>();
+//		x.add(1);
+//		x.add(2);
+//		x.add(3);
+		int[] y = new int[]{2,3,4};
+		int[] z = new int[]{6,7,8};
+		String xx = Arrays.toString(x);
+		String yy = Arrays.toString(y);
+		String zz = Arrays.toString(z);
+		System.out.println(Arrays.toString(x));
+		String[] cmd = {
+			      "python",
+			      "C:\\Users\\Bendik\\git\\biatchlpleasesss\\paretoPlot.py", //paretoPlot
+			      xx.substring(1, xx.length()-1),
+			      yy.substring(1,yy.length()-1),
+			      zz.substring(1,zz.length()-1),
+			    };
+			    Runtime.getRuntime().exec(cmd);
 	}
 
 }
