@@ -37,12 +37,13 @@ public class MasterEA {
 	private List<Chromosome> oldPopulation;
 	private double crossoverRate;
 	private double mutationRate;
+	private double chromMutRate;
 	private Random r;
 	private Mutator mut;
 	private int tourneySize;
 	private int minSegmentSize;
 	
-	private MasterEA(String filename, double crossover, double mutation, String[] objectives, int tourney, int minSeg) {
+	private MasterEA(String filename, double crossover, double geneMut, double chromMut, String[] objectives, int tourney, int minSeg) {
 		//this.fh = new FileHandler(filename);
 		this.objectives = objectives;
 		this.fh = new FileHandler(filename);
@@ -52,7 +53,8 @@ public class MasterEA {
 		this.sh = new SegmentHandler(fh, eu);
 		this.km = new Kmeans(fh, eu);
 		this.crossoverRate = crossover;
-		this.mutationRate = mutation;
+		this.mutationRate = geneMut;
+		this.chromMutRate = chromMut;
 		this.r = new Random();
 		this.mut = new Mutator();
 		this.tourneySize = tourney;
@@ -212,7 +214,11 @@ public class MasterEA {
 			newPop.add(children[1]);
 			for (int i = 0; i < children.length; i++) {
 				Chromosome chromosome = children[i];
-				mut.mutateChromosome(chromosome, this.eu);
+				mut.mutateChromosome(chromosome, this.eu); //gene mutation
+				double mutateChrom = r.nextDouble();
+				if(mutateChrom < this.chromMutRate){ //chromosome mutation
+					sh.mergeToLimit(chromosome, chromosome.getSegments().size(), objectives);
+				}
 				chromosome.updateAll(this.objectives, this.minSegmentSize, init);
 //				System.out.println("# of segments: "+chromosome.getSegments().size());
 //				if(mutated || crossed){					
@@ -324,7 +330,9 @@ public class MasterEA {
 		int minSegmentSize = 200;
 		int maxGenerations = 20;
 		int tourneySize = 2; //binary
-		MasterEA m = new MasterEA(filename, 0.7, 0, objectives, tourneySize,  minSegmentSize);
+		double mutateGene = 0;
+		double mutateSeg = 0.1;
+		MasterEA m = new MasterEA(filename, 0.7, mutateGene, mutateSeg, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
 		//MasterEA master = new MasterEA("Test_image");
 
