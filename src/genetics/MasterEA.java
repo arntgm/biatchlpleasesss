@@ -239,7 +239,7 @@ public class MasterEA {
 		
 		//create pop using Kmeans
 		List<int[]> pop = new ArrayList<int[]>();
-		for (int i = 2; i < 12; i++) {
+		for (int i = 2; i < 5; i++) {
 			for (int j = 0; j < 2; j++) {
 				List<Integer> kmeans = km.getKmeans(i, 20);
 				pop.add(km.getKgenes(kmeans));
@@ -274,16 +274,16 @@ public class MasterEA {
 		}
 		System.out.println("merging....");
 		//TEST PRINTS
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(3).getSegments(), oldPopulation.get(3).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(3).getSegments(), oldPopulation.get(3).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(4).getSegments(), oldPopulation.get(4).getEdgeMap()));
-		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(4).getSegments(), oldPopulation.get(4).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(3).getSegments(), oldPopulation.get(3).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(3).getSegments(), oldPopulation.get(3).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(4).getSegments(), oldPopulation.get(4).getEdgeMap()));
+//		ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(oldPopulation.get(4).getSegments(), oldPopulation.get(4).getEdgeMap()));
 //		System.out.println("merging....");
 //		sh.mergeToLimit(oldPopulation.get(0), 15, this.objectives);
 //		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
@@ -342,6 +342,7 @@ public class MasterEA {
 			int limit = 20+r.nextInt(10);
 //			System.out.println(eu.getChromosomeEdgeAndConn(topSols.get(i).getSegments(), topSols.get(i).getEdgeMap())[1]);
 			sh.mergeToLimit(topSols.get(i), limit, this.objectives);
+			System.out.println("Number of segments in solution: "+topSols.get(i).getSegments().size());
 			pp.generateImage(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved"+i+".jpg");
 			pp.generateBlackAndWhite(topSols.get(i).getSegments(), (HashMap)topSols.get(i).getEdgeMap(), "saved_BW_"+i+".jpg");
 			ImageDrawer.drawImage("saved"+i+".jpg");
@@ -350,10 +351,10 @@ public class MasterEA {
 	}
 	
 	public static void main(String[] args) {
-		String filename = "Test_image_2";
+		String filename = "Test_image_6";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
 
-		int population = 20;
+		int population = 6;
 		int mstRemoveLimit = 60;
 		int minSegmentSize = 200;
 		int maxGenerations = 0;
