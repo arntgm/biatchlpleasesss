@@ -123,23 +123,23 @@ public class SegmentHandler {
 			neighbor = neighbors.get(r.nextInt(neighbors.size()));
 			neighborSeg = toSeg.get(neighbor);
 		}
+
+		neighborArray[pixel] = neighbor;
+		if (segment.size() != 1) {
+			updateArray(neighborArray, segment, neighborSeg, toSeg, pixel);
+		}
+		
 		for (Integer integer : segment) {
 			neighborSeg.add(integer);
 			toSeg.set(integer, neighborSeg);
 		}
-		neighborArray[pixel] = neighbor;
-		System.out.println("Updating array");
-		updateArray(neighborArray, segment, neighborSeg, toSeg, pixel);
-		System.out.println("Update done");
 	}
 	
 	
 	public void updateArray(int[] geneArray, HashSet<Integer> segment, HashSet<Integer> neighSeg, ArrayList<HashSet<Integer>> toSeg, int startPoint) {
-		System.out.println("Seg size: "+segment.size());
-		System.out.println("Neighseg size: "+neighSeg.size());
-		HashMap<Integer, Integer> closed = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> visited = new HashMap<Integer, Integer>();
 		for (Integer index : segment) {
-			closed.put(index, -1);
+			visited.put(index, -1);
 		}
 		int current = startPoint;
 		List<Integer> open = new ArrayList<Integer>();
@@ -147,12 +147,13 @@ public class SegmentHandler {
 		List<Integer> neighbors;
 		while (!open.isEmpty()) {
 			current = open.remove(0);
-			closed.put(current, 1);
+			visited.put(current, 1);
 			neighbors = this.eu.getNeighborNumbers(current);
 			for (Integer neighbor : neighbors) {
-				if (closed.containsKey(neighbor) && closed.get(neighbor) != 1) {
+				if (visited.containsKey(neighbor) && visited.get(neighbor) != 1) {
 					geneArray[neighbor] = current;
 					open.add(neighbor);
+					visited.put(neighbor, 1);
 				}
 			}
 		}
