@@ -228,7 +228,9 @@ public class MasterEA {
 		int genCounter = 0;
 		ArrayList<Edge<Integer>> MST = (ArrayList<Edge<Integer>>) mst.getMSTPath();
 		int[] genes = this.mst.getGenes(MST);
-		List<int[]> pop = this.mst.generateGeneArrays(population, removeLimit, MST, genes);
+		System.out.println("Before");
+		List<int[]> pop = this.mst.generateGeneArrays2(population, removeLimit, MST, genes);
+		System.out.println("After");
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
 		System.out.println("Initial chromosomes created");
 		boolean init = true;
@@ -237,9 +239,12 @@ public class MasterEA {
 			chrome.updateAll(this.objectives, this.minSegmentSize, init);
 		}
 		//TEST PRINTS
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
-//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
+		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(2).getSegments(), oldPopulation.get(2).getEdgeMap()));
 
 		
 		System.out.println("All chromosomes updated. Sorting...");
@@ -296,6 +301,7 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
+
 		int population = 50;
 		int mstRemoveLimit = 50;
 		int minSegmentSize = 100;

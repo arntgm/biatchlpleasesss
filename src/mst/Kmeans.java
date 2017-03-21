@@ -145,10 +145,14 @@ public class Kmeans {
 		int lonely = 0;
 		int[] genes = new int[Kseg.size()];
 		boolean[] visited = new boolean[Kseg.size()];
+//		for (int i = 0; i < visited.length; i++) {
+//			visited[i] = false;
+//		}
 		for (int i = 0; i < visited.length; i++) {
 			boolean wasSet = false;
 			visited[i] = true;
 			List<Integer> neighbors = this.eu.getNeighborNumbers(i);
+			System.out.println(neighbors);
 			for (Integer neighbor : neighbors) {
 				if(Kseg.get(neighbor) == Kseg.get(i)){
 						if(visited[neighbor]){
@@ -184,20 +188,73 @@ public class Kmeans {
 		return genes;
 	}
 	
+	private int getNextStartPoint(int[] visited) {
+		for (int i = 0; i < visited.length; i++) {
+			if(visited[i] != 1) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	private int[] getKgenes3(List<Integer> clusters) {
+		int[] visited = new int[clusters.size()];
+		int[] genes = new int[clusters.size()];
+		int current = 0;
+		List<Integer> open = new ArrayList<Integer>();
+		int[] closed = new int[clusters.size()];
+		while (current != -1) {
+			open.add(current);
+			visited[current] = 1;
+			List<Integer> neighbors;
+			while (!open.isEmpty()) {
+				current = open.remove(0);
+				closed[current] = 1;
+				neighbors = this.eu.getNeighborNumbers(current);
+				for (Integer neighbor : neighbors) {
+					if (clusters.get(neighbor) == clusters.get(current) && closed[neighbor] != 1 && visited[neighbor] != 1) {
+						genes[neighbor] = current;
+						open.add(neighbor);
+						visited[neighbor] = 1;
+					}
+				}
+			}
+			int last = current;
+			current = getNextStartPoint(visited);
+		}
+		genes = fixZero(genes);
+		return genes;
+	}
+	
+	private int[] fixZero(int[] genes) {
+		for (int i = 2; i < genes.length; i++) {
+			if (genes[i] == 0) {
+				genes[i] = i;
+			}
+		}
+		return genes;
+	}
+	
 	public static void main(String[] args) {
-		FileHandler f = new FileHandler("Test_image_3");
+		FileHandler f = new FileHandler("Test_image");
 //		ImageDrawer id = new ImageDrawer();
-		Euclidian eu = new Euclidian(f.getWidth(), f.getHeight(), f.getPixels(), f.getListPixels());
+		Euclidian eu = new Euclidian(f.getWidth(), f.getHeight(), f.getPixels(), f.getListPixels());;
 		SegmentHandler sh = new SegmentHandler(f, eu);
 		PicPrinter pp = new PicPrinter(f, eu);
 		Kmeans k = new Kmeans(f, eu);
 		ArrayList<Integer> clusters = k.getKmeans(4, 20);
-		int[] genes = k.getKgenes(clusters);
+		System.out.println("Clusters size "+clusters.size());
+		int[] genes = k.getKgenes3(clusters);
+		for (int i = 0; i < 20; i++) {
+			System.out.println(genes[i]);
+		}
 		Chromosome c = new Chromosome(genes, eu, sh);
 		c.updateAll(new String[] {"devi", "edge", "conn"}, 200, true);
 		ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()));
+		System.out.println(clusters);
 		System.out.println(clusters.size());
-		ImageDrawer.drawImage(pp.genKmeansImg(clusters));
+//		ImageDrawer.drawImage(pp.genKmeansImg(clusters));
+		
 	}
 	
 	
