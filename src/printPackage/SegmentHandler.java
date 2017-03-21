@@ -162,7 +162,7 @@ public class SegmentHandler {
 			}
 		}
 		long totTime = System.currentTimeMillis()-startTime;
-		System.out.println("Calculating segments took: "+totTime+" miliseconds.");
+//		System.out.println("Calculating segments took: "+totTime+" miliseconds.");
 //		System.out.println("Merged: "+merge);
 //		System.out.println("Segments calculated");
 		return segments;

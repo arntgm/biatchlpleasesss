@@ -11,9 +11,6 @@ import java.util.Set;
 import mst.Graph.Edge;
 
 public class Prims{
-//	private Collection verts;
-//	private Collection edges;
-	
 	
 	private Prims(){ }
 	
@@ -50,11 +47,13 @@ public class Prims{
 				unvis = e.getToVertex();
 				vis = e.getFromVertex();
 			}
-			path.add(new Graph.Edge<>(e.getCost(), unvis, vis)); // O(1)
+			path.add(new Graph.Edge<>(e.getCost(), unvis, vis)); 
 			vertex = unvis;
-			unvisited.remove(vertex); // O(1)
+			unvisited.remove(vertex);
 		}
 		return path;
 	}
+	
+
 	
 }
