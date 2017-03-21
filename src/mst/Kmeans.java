@@ -242,7 +242,7 @@ public class Kmeans {
 		SegmentHandler sh = new SegmentHandler(f, eu);
 		PicPrinter pp = new PicPrinter(f, eu);
 		Kmeans k = new Kmeans(f, eu);
-		ArrayList<Integer> clusters = k.getKmeans(4, 20);
+		ArrayList<Integer> clusters = k.getKmeans(10, 20);
 		System.out.println("Clusters size "+clusters.size());
 		int[] genes = k.getKgenes3(clusters);
 		for (int i = 0; i < 20; i++) {
