@@ -34,6 +34,63 @@ public class SegmentHandler {
 //		this.neighborArray = neighborArray;
 //	}
 	
+	public void mergeCentroids(Chromosome c, double threshold){
+		List<HashSet<Integer>> segments = c.getSegments();
+		for (HashSet<Integer> segment : segments) {
+			HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(segment, c.getSegmentMap());
+			if(c.getCentroidMap().containsKey(segment)){
+				Color segCentr = c.getCentroidMap().get(segment);
+				double minDist = Double.MAX_VALUE;
+				HashSet<Integer> closest = null;
+				for (HashSet<Integer> neighborSeg : neighborSegs.keySet()) {
+					if(c.getCentroidMap().containsKey(neighborSeg)){
+						Color neighCentr = c.getCentroidMap().get(neighborSeg);
+	//				if(!neighCentr.equals(null)){
+						double newDist = eu.getRGBEuclid(segCentr, neighCentr);
+						if(newDist < minDist){
+							minDist = newDist;
+							closest = neighborSeg;
+	//					}
+						}
+					}
+				}
+				if(minDist<threshold){
+//					System.out.println("Centroid merge!");
+					if(segment.size()>closest.size()){
+						c.getNeighborArray()[neighborSegs.get(closest)[1]] = neighborSegs.get(closest)[0];
+						updateArray(c.getNeighborArray(), closest, segment, c.getSegmentMap(), neighborSegs.get(closest)[1]);
+						for (Integer integer : closest) {
+							segment.add(integer);
+							c.getSegmentMap().set(integer, segment);
+						}
+					}else{
+						c.getNeighborArray()[neighborSegs.get(closest)[0]] = neighborSegs.get(closest)[1];
+						updateArray(c.getNeighborArray(), segment, closest, c.getSegmentMap(), neighborSegs.get(closest)[0]);
+						for (Integer integer : segment) {
+							closest.add(integer);
+							c.getSegmentMap().set(integer, closest);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public HashMap<HashSet<Integer>, Integer[]> getNeighborSegs(HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
+		HashMap<HashSet<Integer>, Integer[]> neighborSegs = new HashMap<HashSet<Integer>, Integer[]>();
+		for (Integer pixel : segment) {
+			List<Integer> neighbors = eu.getNeighborNumbers(pixel);
+			for (Integer neighbor : neighbors) {
+				HashSet<Integer> neighborSeg = toSeg.get(neighbor);
+				if(!neighborSeg.equals(segment)){
+					neighborSegs.put(neighborSeg, new Integer[]{pixel, neighbor});
+				}
+			}
+		}
+		int i = 0;
+		return neighborSegs;
+	}
+	
 	public void mergeToLimit(Chromosome c, int limit, String[] objectives){
 		List<HashSet<Integer>> segments = c.getSegments();
 		System.out.println("initial size: "+segments.size());
