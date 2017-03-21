@@ -17,6 +17,7 @@
 	<classpathentry kind="lib" path="lib/surfaceplotter-2.0.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/surfaceplotter-2.0.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/surfaceplotter-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jmathplot.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JOGL">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Bendik/git/JOGL"/>
@@ -42,5 +43,6 @@
 	<classpathentry kind="lib" path="C:/Users/Bendik/git/jfreechart-1.0.19/lib/swtgraphics2d.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jzy3d-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/surfaceplotter"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmathplot"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

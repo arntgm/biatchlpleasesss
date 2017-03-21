@@ -18,6 +18,7 @@ import mst.FileHandler;
 import mst.MinSpanTree;
 import mst.Graph.Edge;
 import printPackage.ImageDrawer;
+import printPackage.ParetoFront;
 import printPackage.PicPrinter;
 import printPackage.SegmentHandler;
 import utils.Euclidian;
@@ -236,6 +237,8 @@ public class MasterEA {
 //			System.out.println("Updating chromosome...");
 			chrome.updateAll(this.objectives, this.minSegmentSize, init);
 		}
+		ParetoFront pf = new ParetoFront();
+		pf.visualizeFront(oldPopulation);
 		//TEST PRINTS
 //		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
 //		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(1).getSegments(), oldPopulation.get(1).getEdgeMap()));
@@ -296,10 +299,10 @@ public class MasterEA {
 	public static void main(String[] args) {
 		String filename = "Test_image";
 		String[] objectives = new String[] {"devi", "edge", "conn"};
-		int population = 50;
+		int population = 5;
 		int mstRemoveLimit = 50;
 		int minSegmentSize = 100;
-		int maxGenerations = 100;
+		int maxGenerations = 10;
 		int tourneySize = 2; //binary
 		MasterEA m = new MasterEA(filename, 0.7, 0.001, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
