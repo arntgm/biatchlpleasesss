@@ -3,6 +3,7 @@ package genetics;
 import utils.Euclidian;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +59,10 @@ public class Mutator {
 			}
 		}
 		return updateSegments;
+	}
+	
+	public int[] segmentMutation(Chromosome c) {
+		this.sh.mergeToLimit(c, c.getSegments().size(), )
 	}
 
 }
