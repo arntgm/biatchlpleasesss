@@ -55,11 +55,11 @@ public class MinSpanTree {
 			out[i] = 0;
 			starters[origGene[i]] = 1;
 		}
-		System.out.println("starters done");
+//		System.out.println("starters done");
 		for (int i = 0; i < starters.length; i++) {
 			if (starters[i] == 0) {
 				int[] new_in = exploreBranch(origGene, i);
-				System.out.println("Explored branch: "+i);
+//				System.out.println("Explored branch: "+i);
 				int max = 0;
 				for (int j = 0; j < origGene.length; j++) {
 					if (new_in[j]>max) {
