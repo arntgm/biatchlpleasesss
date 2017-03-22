@@ -44,89 +44,6 @@ public class MinSpanTree {
 		//this.objectives = objectives;
 	}
 	
-	public List<int[]> generateGeneArrays2(int population, int removeLimit, List<Edge<Integer>> origMSTPath, int[] origGene) {
-		List<int[]> geneList = new ArrayList<int[]>();
-//		Collections.sort(origMSTPath);
-		int[] in =  new int[origGene.length];
-		int[] out = new int[origGene.length];
-		int[] starters = new int[origGene.length];
-		for (int i = 0; i < origGene.length; i++) {
-			in[i] = 0;
-			out[i] = 0;
-			starters[origGene[i]] = 1;
-		}
-//		System.out.println("starters done");
-		for (int i = 0; i < starters.length; i++) {
-			if (starters[i] == 0) {
-				int[] new_in = exploreBranch(origGene, i);
-//				System.out.println("Explored branch: "+i);
-				int max = 0;
-				for (int j = 0; j < origGene.length; j++) {
-					if (new_in[j]>max) {
-						max = new_in[j];
-					}
-				}
-				int[] new_out = new int[origGene.length];
-				new_out[i]=max;
-				for (int j = 0; j < in.length; j++) {
-					if (new_in[j] > 0) {
-						new_out[j] = max-new_in[j];
-					}
-				}
-				for (int j = 0; j < origGene.length; j++) {
-					in[j] += new_in[j];
-					out[j] += new_out[j];
-				}
-			}
-		}
-		
-		for (int i = 0; i < population; i++) {
-			List<Edge<Integer>> mstCopy = new ArrayList<Edge<Integer>>(origMSTPath);
-			int[]newGene = new int[origGene.length];
-			System.arraycopy(origGene, 0, newGene, 0, origGene.length);
-			for (int j = 0; j < removeLimit; j++) {
-				Edge<Integer>removeEdge = mstCopy.remove(mstCopy.size()-1); //expensive edge
-//				Edge<Integer>removeEdge = mstCopy.remove(this.r.nextInt(mstCopy.size())); //random edge
-				int index = removeEdge.getFromVertex().getValue();
-				int counter = 0;
-				while (in[index] < 10000 || out[index] < 10000) {
-					removeEdge = mstCopy.remove(mstCopy.size()-1-this.r.nextInt(10000)); //expensive edge
-					index = removeEdge.getFromVertex().getValue();
-					counter ++;
-					if (counter == 1000)
-						break;
-				}
-				newGene[index] = index; //point to self
-				
-				//point to random neighbor
-//				int oldLink = newGene[index];
-//				List<Vertex<Integer>> neighbors = getAllNeighbors(Math.floorDiv(index, this.width), index%this.width);
-//				int newLink = neighbors.get(r.nextInt(neighbors.size())).getValue();
-//				while(newLink == oldLink){
-//					newLink = neighbors.get(r.nextInt(neighbors.size())).getValue();
-//				}
-//				newGene[index] = newLink;
-			}
-			geneList.add(newGene);
-		}
-		return geneList;
-	}
-	
-	private int[] exploreBranch(int[] origGene, int i) {
-		int[] visited = new int[origGene.length];
-		int[] in = new int[origGene.length];
-		boolean loop = false;
-		while (! loop) {
-			if (origGene[i] == i || visited[i] > 0) {
-				loop = true;
-			} else {
-				visited[i] = 1;
-				in[origGene[i]] += in[i]+1;
-				i = origGene[i];
-			}
-		}
-		return in;
-	}
 	
 	
 	public List<int[]> generateGeneArrays(int population, int removeLimit, List<Edge<Integer>> origMSTPath, int[] origGene){
@@ -137,8 +54,8 @@ public class MinSpanTree {
 			int[]newGene = new int[origGene.length];
 			System.arraycopy(origGene, 0, newGene, 0, origGene.length);
 			for (int j = 0; j+i < removeLimit; j++) {
-				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j); //expensive edge
-//				Edge<Integer>removeEdge = mstCopy.remove(this.r.nextInt(mstCopy.size())); //random edge
+//				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j); //expensive edge
+				Edge<Integer>removeEdge = mstCopy.remove(this.r.nextInt(mstCopy.size())); //random edge
 				int index = removeEdge.getFromVertex().getValue();
 				newGene[index] = index; //point to self
 				

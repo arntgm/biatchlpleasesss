@@ -36,25 +36,17 @@ public class SegmentHandler {
 //	}
 	
 	public void mergeCentroids(Chromosome c, double threshold){
-//		System.out.println("begin merge!");
 		List<HashSet<Integer>> segments = c.getSegments();
 		for (HashSet<Integer> segment : segments) {
 			if(segment.size()<10000){				
-//				System.out.println("get neighboring segments...");
 				try{
-//				System.out.println("Edges to check: "+c.getEdgeMap().get(segment).size());
-//				System.out.println("Segment size: "+segment.size());
-				HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(c.getEdgeMap().get(segment), c.getSegmentMap());
-	//			if(c.getCentroidMap().containsKey(segment)){
-//				System.out.println("check centroid distances...");
+				HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(c.getEdgeMap(), segment, c.getSegmentMap());
 					Color segCentr = c.getCentroidMap().get(segment);
 					double minDist = Double.MAX_VALUE;
 					HashSet<Integer> closest = null;
 					for (HashSet<Integer> neighborSeg : neighborSegs.keySet()) {
-	//					if(c.getCentroidMap().containsKey(neighborSeg)){
 						try{
 							Color neighCentr = c.getCentroidMap().get(neighborSeg);
-							//				if(!neighCentr.equals(null)){
 							double newDist = eu.getRGBEuclid(segCentr, neighCentr);
 							if(newDist < minDist){
 								minDist = newDist;
@@ -66,8 +58,6 @@ public class SegmentHandler {
 	//					}
 					}
 					if(minDist<threshold){
-//						System.out.println("found near enough, merge centroids");
-	//					System.out.println("Centroid merge!");
 						if(segment.size()>closest.size()){
 							c.getNeighborArray()[neighborSegs.get(closest)[1]] = neighborSegs.get(closest)[0];
 							updateArray(c.getNeighborArray(), closest, segment, c.getSegmentMap(), neighborSegs.get(closest)[1]);
@@ -90,14 +80,15 @@ public class SegmentHandler {
 		}
 	}
 	
-	public HashMap<HashSet<Integer>, Integer[]> getNeighborSegs(HashSet<Integer> edges, ArrayList<HashSet<Integer>> toSeg){
+	public HashMap<HashSet<Integer>, Integer[]> getNeighborSegs(HashMap<HashSet<Integer>, HashSet<Integer>> edgeMap, HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
 		HashMap<HashSet<Integer>, Integer[]> neighborSegs = new HashMap<HashSet<Integer>, Integer[]>();
 		HashSet<HashSet<Integer>> foundNeighs = new HashSet<HashSet<Integer>>();
+		HashSet<Integer> edges = edgeMap.get(segment);
 		for (Integer pixel : edges) {
 			List<Integer> neighbors = eu.getNeighborNumbers(pixel);
 			for (Integer neighbor : neighbors) {
 				HashSet<Integer> neighborSeg = toSeg.get(neighbor);
-				if(!neighborSeg.equals(edges) && !foundNeighs.contains(neighborSeg)){
+				if(!neighborSeg.equals(segment) && !foundNeighs.contains(neighborSeg)){
 					neighborSegs.put(neighborSeg, new Integer[]{pixel, neighbor});
 					foundNeighs.add(neighborSeg);
 					break;
@@ -112,8 +103,11 @@ public class SegmentHandler {
 	public void mergeToLimit(Chromosome c, int limit, String[] objectives){
 		List<HashSet<Integer>> segments = c.getSegments();
 		while(segments.size()>limit){
+			System.out.println("merge time. segments: "+segments.size());
 			Collections.sort(segments, new SizeComparator());
-			mergeToNeighbor(c.getNeighborArray(),segments.get(0),segments, c.getSegmentMap());
+//			mergeToNeighbor(c.getNeighborArray(),segments.get(0),segments, c.getSegmentMap());
+			mergeToBestNeighbor(c, c.getNeighborArray(), segments.get(0), segments, c.getSegmentMap());
+			System.out.println("merged to best neighbor");
 			c.updateAll(objectives, 0, false);
 			segments = c.getSegments();
 		}
@@ -187,20 +181,20 @@ public class SegmentHandler {
 
 
 	public void mergeToBestNeighbor(Chromosome c, int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg) {
-		HashSet<Integer> edges = c.getEdgeMap().get(segment);
-		HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(edges, toSeg);
+		HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(c.getEdgeMap(), segment, toSeg);
 		Map<HashSet<Integer>, Color> centroidMap = c.getCentroidMap();
 		double deviation = Double.MAX_VALUE;
 		HashSet<Integer> bestNeighbor = null;
 		for (HashSet<Integer> neighborSeg : neighborSegs.keySet()) {
 			double newDev = getRGBDev(centroidMap.get(neighborSeg), centroidMap.get(segment));
+			System.out.println(newDev);
 			if (newDev < deviation) {
 				deviation = newDev;
 				bestNeighbor = neighborSeg;
 			}
 		}
 		int pixel = neighborSegs.get(bestNeighbor)[0];
-		int neighbor = neighborSegs.get(bestNeighbor)[0];
+		int neighbor = neighborSegs.get(bestNeighbor)[1];
 		neighborArray[pixel] = neighbor;
 		if (segment.size() != 1) {
 			updateArray(neighborArray, segment, bestNeighbor, toSeg, pixel);
@@ -225,7 +219,7 @@ public class SegmentHandler {
 		HashSet<Integer> neighborSeg = toSeg.get(neighbor);
 		while(neighborSeg.equals(segment)){
 			if(neighbors.size()<2)
-				break; //hot fix bro	
+				break; //hot fix bro
 			neighbors.remove(neighbor);
 			neighbor = neighbors.get(r.nextInt(neighbors.size()));
 			neighborSeg = toSeg.get(neighbor);
