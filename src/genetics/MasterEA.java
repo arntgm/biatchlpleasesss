@@ -273,7 +273,7 @@ public class MasterEA {
 //		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()), "", new String[2], new String[2]);
 //		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
 		int  naxGenerations = 0;
-		System.out.println("Beginning generational loop...");
+		System.out.println("Beginning evolutionary loop...");
 		for (Chromosome c : oldPopulation) {
 			for (int i = 0; i < 2; i++) {
 				sh.mergeCentroids(c, 150-40*i);
@@ -281,7 +281,6 @@ public class MasterEA {
 				c.generateSegments();
 				c.generateEdgeMap();
 				c.generateCentroidMap();
-				System.out.println("hallooo");
 			}
 		}
 		//TEST PRINTS
@@ -340,53 +339,24 @@ public class MasterEA {
 		System.out.println("Generating images and saving solutions...");
 //		chromoTiers.clear();
 		chromoTiers = fastNonDominatedSort(oldPopulation);
-		List<Chromosome> topSols = new ArrayList<Chromosome>();
-		int tier = 0;
-		int n = 0;
-		boolean sol = false;
-		for (Chromosome chromosome : chromoTiers.get(0)) {
-			if (chromosome.getSegments().size() == KmeanSens) {
-				topSols.add(chromosome);
-				break;
-			}
-		}
-		if (! sol) {
-			Chromosome chrom = chromoTiers.get(0).get(0);
-			sh.mergeToLimit(chrom, KmeanSens, objectives);
-			topSols.add(chrom);
-		}
-		while (topSols.size() < 5) {
-			topSols.add(chromoTiers.get(tier).get(n));
-			n++;
-			if (n > chromoTiers.get(tier).size() - 1) {
-				break;
-			}
-		}
-		double[] x = new double[topSols.size()];
-		double[] y = new double[topSols.size()];
-		double[] z = new double[topSols.size()];
-		for (int i = 0; i < topSols.size(); i++) {
-			int limit = 20+r.nextInt(10);
-			Chromosome c = topSols.get(i);
-			sh.mergeToLimit(c, limit, this.objectives);
-			x[i] = c.getObjectiveValue("devi");
-			y[i] = c.getObjectiveValue("conn");
-			z[i] = c.getObjectiveValue("edge");
-			
-			System.out.println("Number of segments in solution: "+c.getSegments().size());
-			pp.generateImage(c.getSegments(), (HashMap)c.getEdgeMap(), "saved"+i+".jpg");
-			pp.generateBlackAndWhite(c.getSegments(), (HashMap)c.getEdgeMap(), "saved_BW_"+i+".jpg");
-			String[] values = new String[objectives.length];
-			for (int j = 0; j < objectives.length; j++) {
-				values[j] = c.getObjectiveValue(objectives[j]) + "";
-			}
-			ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
-			ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
+		double[] x = new double[chromoTiers.get(0).size()];
+		double[] y = new double[chromoTiers.get(0).size()];
+		double[] z = new double[chromoTiers.get(0).size()];
+		int count = 0;
+		for (Chromosome c : chromoTiers.get(0)) {
+			x[count] = c.getObjectiveValue("devi");
+			y[count] = c.getObjectiveValue("conn");
+			z[count] = c.getObjectiveValue("edge");
+			count++;
 		}
 		HashMap<String, String> objMap = new HashMap<String, String>();
 		String xx = Arrays.toString(x);//devi
 		String yy = Arrays.toString(y);//conn
 		String zz = Arrays.toString(z);//edge
+		System.out.println(xx);
+		System.out.println(yy);
+		System.out.println(zz);
+		System.out.println(chromoTiers.get(0).size());
 		objMap.put("devi", xx);
 		objMap.put("conn", yy);
 		objMap.put("edge", zz);
@@ -404,18 +374,63 @@ public class MasterEA {
 					"python",
 					"C:\\Users\\Bendik\\git\\biatchlpleasesss\\paretoPlot2D.py",
 					this.objectives[0],
-					objMap.get(this.objectives[0]),
 					this.objectives[1],
-					objMap.get(this.objectives[1])
+					objMap.get(this.objectives[0]).substring(1,xx.length()-1),
+					objMap.get(this.objectives[1]).substring(1,xx.length()-1)
 			};
 			Runtime.getRuntime().exec(cmd);
 		}
+		List<Chromosome> topSols = new ArrayList<Chromosome>();
+		int n = 0;
+		boolean sol = false;
+		Chromosome addedChromo;
+		for (Chromosome chromosome : chromoTiers.get(0)) {
+			if (chromosome.getSegments().size() == KmeanSens) {
+				topSols.add(chromosome);
+				sol = true;
+				break;
+			}
+		}
+		if (! sol) {
+			for (Chromosome chromosome : chromoTiers.get(0)) {
+				if(chromosome.getSegments().size() > KmeanSens){
+					sh.mergeToLimit(chromosome, KmeanSens, objectives);
+					topSols.add(chromosome);
+					break;
+				}
+			}
+		}
+		if(!topSols.isEmpty())
+			chromoTiers.get(0).remove(topSols.get(0));
+		while (topSols.size() < 5 && !chromoTiers.get(0).isEmpty()) {
+			topSols.add(chromoTiers.get(0).get(n));
+			n++;
+			if (n > chromoTiers.get(0).size() - 1) {
+				break;
+			}
+		}
+
+		for (int i = 0; i < topSols.size(); i++) {
+			int limit = 20+r.nextInt(10);
+			Chromosome c = topSols.get(i);
+			sh.mergeToLimit(c, limit, this.objectives);
+			System.out.println("Number of segments in solution: "+c.getSegments().size());
+			pp.generateImage(c.getSegments(), (HashMap)c.getEdgeMap(), "saved"+i+".jpg");
+			pp.generateBlackAndWhite(c.getSegments(), (HashMap)c.getEdgeMap(), "saved_BW_"+i+".jpg");
+			String[] values = new String[objectives.length];
+			for (int j = 0; j < objectives.length; j++) {
+				values[j] = c.getObjectiveValue(objectives[j]) + "";
+			}
+			ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
+			ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
+		}
+		
 	}
 	
 	public static void main(String[] args) throws IOException {
 		//parameters
 		String filename = "Test_image_2";
-		String[] objectives = new String[] {"edge", "conn"}; //"devi", "edge", "conn"
+		String[] objectives = new String[] {"devi", "edge"}; //"devi", "edge", "conn"
 		int KmeanSens = 17;
 		int mstRemoveLimit = 2500; //edges to cut in MST
 		int pMST = 0;
