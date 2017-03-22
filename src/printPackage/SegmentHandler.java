@@ -185,7 +185,11 @@ public class SegmentHandler {
 	}
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+
+>>>>>>> refs/remotes/origin/master
 	public void mergeToBestNeighbor(Chromosome c, int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg) {
 		HashSet<Integer> edges = c.getEdgeMap().get(segment);
 		HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(edges, toSeg);
@@ -217,6 +221,9 @@ public class SegmentHandler {
 		double b = Math.pow(c1.getBlue()-c2.getBlue(), 2);
 		return Math.sqrt(r+g+b);
 	}
+<<<<<<< HEAD
+>>>>>>> refs/remotes/origin/master
+=======
 >>>>>>> refs/remotes/origin/master
 	
 	public void mergeToNeighbor(int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg){
