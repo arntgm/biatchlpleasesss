@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -110,13 +111,11 @@ public class SegmentHandler {
 	
 	public void mergeToLimit(Chromosome c, int limit, String[] objectives){
 		List<HashSet<Integer>> segments = c.getSegments();
-		System.out.println("initial size: "+segments.size());
 		while(segments.size()>limit){
 			Collections.sort(segments, new SizeComparator());
 			mergeToNeighbor(c.getNeighborArray(),segments.get(0),segments, c.getSegmentMap());
 			c.updateAll(objectives, 0, false);
 			segments = c.getSegments();
-			System.out.println("new size: "+c.getSegments().size());
 		}
 	}
 	
@@ -185,6 +184,38 @@ public class SegmentHandler {
 		return 0;
 	}
 	
+
+	public void mergeToBestNeighbor(Chromosome c, int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg) {
+		HashSet<Integer> edges = c.getEdgeMap().get(segment);
+		HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(edges, toSeg);
+		Map<HashSet<Integer>, Color> centroidMap = c.getCentroidMap();
+		double deviation = Double.MAX_VALUE;
+		HashSet<Integer> bestNeighbor = null;
+		for (HashSet<Integer> neighborSeg : neighborSegs.keySet()) {
+			double newDev = getRGBDev(centroidMap.get(neighborSeg), centroidMap.get(segment));
+			if (newDev < deviation) {
+				deviation = newDev;
+				bestNeighbor = neighborSeg;
+			}
+		}
+		int pixel = neighborSegs.get(bestNeighbor)[0];
+		int neighbor = neighborSegs.get(bestNeighbor)[0];
+		neighborArray[pixel] = neighbor;
+		if (segment.size() != 1) {
+			updateArray(neighborArray, segment, bestNeighbor, toSeg, pixel);
+		}	
+		for (Integer integer : segment) {
+			bestNeighbor.add(integer);
+			toSeg.set(integer, bestNeighbor);
+		}
+	}
+	
+	private double getRGBDev(Color c1, Color c2) {
+		double r = Math.pow(c1.getRed()-c2.getRed(), 2);
+		double g = Math.pow(c1.getGreen()-c2.getGreen(), 2);
+		double b = Math.pow(c1.getBlue()-c2.getBlue(), 2);
+		return Math.sqrt(r+g+b);
+	}
 	
 	public void mergeToNeighbor(int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg){
 		Integer pixel = getRandomEdge(neighborArray, segment, toSeg);
