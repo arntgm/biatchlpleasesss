@@ -87,7 +87,6 @@ public class MinSpanTree {
 			for (int j = 0; j < removeLimit; j++) {
 				Edge<Integer>removeEdge = mstCopy.remove(mstCopy.size()-1); //expensive edge
 //				Edge<Integer>removeEdge = mstCopy.remove(this.r.nextInt(mstCopy.size())); //random edge
-				System.out.println("Orig still contains edge? "+origMSTPath.contains(removeEdge));
 				int index = removeEdge.getFromVertex().getValue();
 				int counter = 0;
 				while (in[index] < 10000 || out[index] < 10000) {
@@ -97,7 +96,6 @@ public class MinSpanTree {
 					if (counter == 1000)
 						break;
 				}
-				System.out.println("IN: "+in[index]+"  OUT: "+out[index]);
 				newGene[index] = index; //point to self
 				
 				//point to random neighbor
@@ -132,7 +130,6 @@ public class MinSpanTree {
 	
 	
 	public List<int[]> generateGeneArrays(int population, int removeLimit, List<Edge<Integer>> origMSTPath, int[] origGene){
-		System.out.println("Generating gene arrays");
 		List<int[]> geneList = new ArrayList<int[]>();
 //		Collections.sort(origMSTPath);
 		for (int i = 0; i < population; i++) {
@@ -140,9 +137,8 @@ public class MinSpanTree {
 			int[]newGene = new int[origGene.length];
 			System.arraycopy(origGene, 0, newGene, 0, origGene.length);
 			for (int j = 0; j+i < removeLimit; j++) {
-//				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j); //expensive edge
-				Edge<Integer>removeEdge = mstCopy.remove(this.r.nextInt(mstCopy.size())); //random edge
-				System.out.println("Orig still contains edge? "+origMSTPath.contains(removeEdge));
+				Edge<Integer>removeEdge = origMSTPath.get(origMSTPath.size()-1-j); //expensive edge
+//				Edge<Integer>removeEdge = mstCopy.remove(this.r.nextInt(mstCopy.size())); //random edge
 				int index = removeEdge.getFromVertex().getValue();
 				newGene[index] = index; //point to self
 				
@@ -155,11 +151,8 @@ public class MinSpanTree {
 //				}
 //				newGene[index] = newLink;
 			}
-			System.out.println("Original MST: "+origMSTPath.size());
-			System.out.println("Copy size: "+mstCopy.size());
 			geneList.add(newGene);
 		}
-		System.out.println(geneList.size());
 		return geneList;
 	}
 	

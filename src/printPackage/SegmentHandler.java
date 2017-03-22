@@ -184,6 +184,7 @@ public class SegmentHandler {
 		return 0;
 	}
 	
+
 	public void mergeToBestNeighbor(Chromosome c, int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg) {
 		HashSet<Integer> edges = c.getEdgeMap().get(segment);
 		HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(edges, toSeg);
