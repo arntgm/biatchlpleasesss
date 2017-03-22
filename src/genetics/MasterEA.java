@@ -281,6 +281,7 @@ public class MasterEA {
 				c.generateSegments();
 				c.generateEdgeMap();
 				c.generateCentroidMap();
+				System.out.println("hallooo");
 			}
 		}
 		//TEST PRINTS
@@ -342,7 +343,19 @@ public class MasterEA {
 		List<Chromosome> topSols = new ArrayList<Chromosome>();
 		int tier = 0;
 		int n = 0;
-		while (topSols.size() < chromoTiers.get(tier).size()) {
+		boolean sol = false;
+		for (Chromosome chromosome : chromoTiers.get(0)) {
+			if (chromosome.getSegments().size() == KmeanSens) {
+				topSols.add(chromosome);
+				break;
+			}
+		}
+		if (! sol) {
+			Chromosome chrom = chromoTiers.get(0).get(0);
+			sh.mergeToLimit(chrom, KmeanSens, objectives);
+			topSols.add(chrom);
+		}
+		while (topSols.size() < 5) {
 			topSols.add(chromoTiers.get(tier).get(n));
 			n++;
 			if (n > chromoTiers.get(tier).size() - 1) {
