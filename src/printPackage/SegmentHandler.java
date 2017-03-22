@@ -185,7 +185,6 @@ public class SegmentHandler {
 		return 0;
 	}
 	
-	public void mergeToBestNeighbor()
 	
 	public void mergeToNeighbor(int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg){
 		Integer pixel = getRandomEdge(neighborArray, segment, toSeg);
