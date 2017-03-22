@@ -260,24 +260,26 @@ public class MasterEA {
 			pop.addAll(this.mst.generateGeneArrays(pMST, removeLimit, MST, genes));
 		}
 		
+		
 		this.oldPopulation = spawnChromosomes(pop, minSegmentSize);
 		System.out.println("Initial chromosomes created.");
 		boolean init = true;
-		
+
 		System.out.println("Updating fields for initial chromosomes...");
 		for (Chromosome chrome : oldPopulation) {
 //			System.out.println("Updating chromosome...");
-			chrome.updateAll(this.objectives, this.minSegmentSize, init); //init
+			chrome.updateAll(this.objectives, this.minSegmentSize, init); //
 		}
+//		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()), "", new String[2], new String[2]);
 //		ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
 		int  naxGenerations = 0;
 		System.out.println("Beginning generational loop...");
 		for (Chromosome c : oldPopulation) {
-			System.out.println("Generation "+oldPopulation.indexOf(c)*5+"...");
 			for (int i = 0; i < 2; i++) {
 				sh.mergeCentroids(c, 150-40*i);
 //				c.updateAll(objectives, this.minSegmentSize, false);
 				c.generateSegments();
+				c.generateEdgeMap();
 				c.generateCentroidMap();
 			}
 		}
@@ -383,15 +385,17 @@ public class MasterEA {
 	
 	public static void main(String[] args) throws IOException {
 		//parameters
-		String filename = "Test_image_3";
-		String[] objectives = new String[] {"devi", "edge"}; //"devi", "edge", "conn"
+		String filename = "Test_image_2";
+		String[] objectives = new String[] {"edge", "conn"}; //"devi", "edge", "conn"
 		int KmeanSens = 17;
-		int pMST = 20;
+		int mstRemoveLimit = 2500; //edges to cut in MST
+		int pMST = 0;
 		int pEachK = 4;
 		int Kstart = 3;
-		int Krange = 5;
-		int mstRemoveLimit = 130;
-		int minSegmentSize = 200;
+		int Krange = 10;
+		int minSegmentSize = 170;
+		int minSegApt = 20;
+		int maxSegApt = 10;
 		int maxGenerations = 70;
 		int tourneySize = 2; //binary
 		double mutateGene = 0.0001;
