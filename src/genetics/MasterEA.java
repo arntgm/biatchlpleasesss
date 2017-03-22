@@ -383,17 +383,33 @@ public class MasterEA {
 			ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
 			ImageDrawer.drawImage(pp.generateBufferedBlackAndWhite(c.getSegments(), c.getEdgeMap()), c.getSegments().size()+"", objectives, values);
 		}
-		String xx = Arrays.toString(x);
-		String yy = Arrays.toString(y);
-		String zz = Arrays.toString(z);
-		String[] cmd = {
-			      "python",
-			      "C:\\Users\\Bendik\\git\\biatchlpleasesss\\paretoPlot.py",
-			      xx.substring(1,xx.length()-1),
-			      yy.substring(1,yy.length()-1),
-			      zz.substring(1, zz.length()-1),
-			    };
-			    Runtime.getRuntime().exec(cmd);
+		HashMap<String, String> objMap = new HashMap<String, String>();
+		String xx = Arrays.toString(x);//devi
+		String yy = Arrays.toString(y);//conn
+		String zz = Arrays.toString(z);//edge
+		objMap.put("devi", xx);
+		objMap.put("conn", yy);
+		objMap.put("edge", zz);
+		if(this.objectives.length >2){
+			String[] cmd = {
+					"python",
+					"C:\\Users\\Bendik\\git\\biatchlpleasesss\\paretoPlot.py",
+					xx.substring(1,xx.length()-1),
+					yy.substring(1,yy.length()-1),
+					zz.substring(1, zz.length()-1),
+			};
+			Runtime.getRuntime().exec(cmd);
+		}else{
+			String[] cmd = {
+					"python",
+					"C:\\Users\\Bendik\\git\\biatchlpleasesss\\paretoPlot2D.py",
+					this.objectives[0],
+					objMap.get(this.objectives[0]),
+					this.objectives[1],
+					objMap.get(this.objectives[1])
+			};
+			Runtime.getRuntime().exec(cmd);
+		}
 	}
 	
 	public static void main(String[] args) throws IOException {
