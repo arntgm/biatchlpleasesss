@@ -239,10 +239,16 @@ public class MasterEA {
 		
 		
 		//create pop using Kmeans
+		int iters = 0;
 		List<int[]> pop = new ArrayList<int[]>();
-		for (int i = 2; i < 4; i++) {
-			for (int j = 0; j < 2; j++) {
-				List<Integer> kmeans = km.getKmeans(i, 20);
+		for (int i = 3; i < 9; i++) {
+			for (int j = 0; j < 3; j++) {
+				if(i == 2){
+					iters = 50;
+				}else{
+					iters = 20;
+				}
+				List<Integer> kmeans = km.getKmeans(i, iters);
 				pop.add(km.getKgenes(kmeans));
 			}
 		}
@@ -268,9 +274,10 @@ public class MasterEA {
 		for (Chromosome c : oldPopulation) {
 			System.out.println("Merging centroids for chromosome "+oldPopulation.indexOf(c));
 			for (int i = 0; i < 2; i++) {
-				sh.mergeCentroids(c, 80-10*i);
-				c.updateAll(objectives, this.minSegmentSize, false);
-//				ImageDrawer.drawImage(pp.generateBufferedImage(oldPopulation.get(0).getSegments(), oldPopulation.get(0).getEdgeMap()));
+				sh.mergeCentroids(c, 150-40*i);
+//				c.updateAll(objectives, this.minSegmentSize, false);
+				c.generateSegments();
+				c.generateCentroidMap();
 			}
 		}
 		System.out.println("merging....");
@@ -351,8 +358,8 @@ public class MasterEA {
 //			System.out.println(eu.getChromosomeEdgeAndConn(topSols.get(i).getSegments(), topSols.get(i).getEdgeMap())[1]);
 			sh.mergeToLimit(c, limit, this.objectives);
 			System.out.println("Number of segments in solution: "+c.getSegments().size());
-//			pp.generateImage(c.getSegments(), (HashMap)c.getEdgeMap(), "saved"+i+".jpg");
-//			pp.generateBlackAndWhite(c.getSegments(), (HashMap)c.getEdgeMap(), "saved_BW_"+i+".jpg");
+			pp.generateImage(c.getSegments(), (HashMap)c.getEdgeMap(), "saved"+i+".jpg");
+			pp.generateBlackAndWhite(c.getSegments(), (HashMap)c.getEdgeMap(), "saved_BW_"+i+".jpg");
 //			ImageDrawer.drawImage(c.getSegments().size()+"segments.jpg");
 //			ImageDrawer.drawImage("saved_BW_"+i+".jpg");
 			String[] values = new String[objectives.length];
@@ -376,16 +383,17 @@ public class MasterEA {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		String filename = "Test_image_2";
-		String[] objectives = new String[] {"devi", "edge", "conn"};
-		int population = 4;
+		String filename = "Test_image_3";
+		String[] objectives = new String[] {"devi", "edge"}; //"devi", "edge", "conn"
+		int population = 20;
 		int mstRemoveLimit = 60;
 		int minSegmentSize = 200;
 		int maxGenerations = 0;
 		int tourneySize = 2; //binary
 		double mutateGene = 0;
 		double mutateSeg = 0.1;
-		MasterEA m = new MasterEA(filename, 0.7, mutateGene, mutateSeg, objectives, tourneySize,  minSegmentSize);
+		double crossover = 0.7;
+		MasterEA m = new MasterEA(filename, crossover, mutateGene, mutateSeg, objectives, tourneySize,  minSegmentSize);
 		m.run(population, mstRemoveLimit, maxGenerations);
 		//MasterEA master = new MasterEA("Test_image");
 
