@@ -91,9 +91,10 @@ public class Kmeans {
 		HashMap<Integer, ArrayList<Color>> centroidMap = new HashMap<Integer, ArrayList<Color>>();
 		
 		//initialization
-		Color picMean = getMeanRGB(this.RGBarray);
+//		Color picMean = getMeanRGB(this.RGBarray);
 		for (int i = 0; i < k; i++) { //set centroids to mean value
-			centroids.add(picMean);
+//			centroids.add(picMean);
+			centroids.add(null);
 			centroidMap.put(i, new ArrayList<Color>());
 		}
 		for (int i = 0; i < this.RGBarray.length; i++) { //assign random cluster
@@ -101,16 +102,22 @@ public class Kmeans {
 			clusterList.add(rand);
 			centroidMap.get(rand).add(this.RGBarray[i]);
 		}
+//		System.out.println(centroidMap.get(0).size());
+//		System.out.println(centroidMap.get(1).size());
 		
 		//main loop
 		int iter = 0;
 		while(iter < iterations){
+//			System.out.println("iteration "+iter);
 			for (int i = 0; i < centroids.size(); i++) {
 				List<Color> centroidPoints = centroidMap.get(i);
 				if(!centroidPoints.isEmpty())
 					centroids.set(i, getMeanRGB(centroidPoints));
 				centroidMap.put(i, new ArrayList<Color>());
 			}
+//			System.out.println(centroids.get(0));
+//			System.out.println(centroids.get(1));
+
 			for (int i = 0; i < RGBarray.length; i++) {
 				double minDist = Double.MAX_VALUE;
 				int bestCentroid = -1;
@@ -119,6 +126,10 @@ public class Kmeans {
 					if(newDist < minDist){
 						minDist = newDist;
 						bestCentroid = j;
+					}else if(newDist == minDist){
+						if(r.nextDouble() > 0.5){ //flip with 50% probability if equal distance
+							bestCentroid = j;
+						}
 					}
 				}
 				clusterList.set(i, bestCentroid);
@@ -131,8 +142,13 @@ public class Kmeans {
 //				System.out.println(lit.size());
 			}
 //			System.out.println("total size: "+sum);
+//			System.out.println(centroids.get(0));
+//			System.out.println(centroidMap.get(0).size());
+//			System.out.println(centroids.get(1));
+//			System.out.println(centroidMap.get(1).size());
 			iter++;
 		}
+//		System.out.println(centroids);
 		return clusterList;
 	}
 	
@@ -192,24 +208,20 @@ public class Kmeans {
 		PicPrinter pp = new PicPrinter(f, eu);
 		Kmeans k = new Kmeans(f, eu);
 
-		ArrayList<Integer> clusters = k.getKmeans(4, 20);
-		System.out.println("Clusters size "+clusters.size());
+		ArrayList<Integer> clusters = k.getKmeans(7, 50);
+//		System.out.println("Clusters size "+clusters.size());
 		int[] genes = k.getKgenes(clusters);
-		for (int i = 0; i < 20; i++) {
-			System.out.println(genes[i]);
-		}
+//		for (int i = 0; i < 20; i++) {
+//			System.out.println(genes[i]);
+//		}
 		Chromosome c = new Chromosome(genes, eu, sh);
 		c.updateAll(new String[] {"devi", "edge", "conn"}, 50, true);
-		ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()));
-		System.out.println(clusters);
-		System.out.println(clusters.size());
-		ImageDrawer.drawImage(pp.genKmeansImg(clusters));
+		ImageDrawer.drawImage(pp.generateBufferedImage(c.getSegments(), c.getEdgeMap()),"", new String[2], new String[2]);
+//		System.out.println(clusters);
+//		System.out.println(clusters.size());
+		ImageDrawer.drawImage(pp.genKmeansImg(clusters), "", new String[2], new String[2]);
 		
 	}
-	
-	
-	
-	
 	
 
 }

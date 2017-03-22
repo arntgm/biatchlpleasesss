@@ -1,14 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.tri as triangles
+from matplotlib import cm
 import sys
 
-print (len(sys.argv))
-#x = np.array(map(float, sys.argv[1].split(', ')))
 x = sys.argv[1].split(', ')
 y = sys.argv[2].split(', ')
 z = sys.argv[3].split(', ')
-sys.stdout.write(sys.argv[0])
 for i in range(len(x)):
     x[i] = float(x[i])
     y[i] = float(y[i])
@@ -25,5 +24,5 @@ plt.show()
 
 
 #if __name__=='__main__':
-    
- #   plotFront([2, 3, 4])
+ #   
+  #  plotFront([2, 3, 4])

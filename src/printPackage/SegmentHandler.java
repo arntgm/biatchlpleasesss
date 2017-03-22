@@ -35,57 +35,71 @@ public class SegmentHandler {
 //	}
 	
 	public void mergeCentroids(Chromosome c, double threshold){
+//		System.out.println("begin merge!");
 		List<HashSet<Integer>> segments = c.getSegments();
 		for (HashSet<Integer> segment : segments) {
-			HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(segment, c.getSegmentMap());
-			try{
-//			if(c.getCentroidMap().containsKey(segment)){
-				Color segCentr = c.getCentroidMap().get(segment);
-				double minDist = Double.MAX_VALUE;
-				HashSet<Integer> closest = null;
-				for (HashSet<Integer> neighborSeg : neighborSegs.keySet()) {
-//					if(c.getCentroidMap().containsKey(neighborSeg)){
-						Color neighCentr = c.getCentroidMap().get(neighborSeg);
-	//				if(!neighCentr.equals(null)){
-						double newDist = eu.getRGBEuclid(segCentr, neighCentr);
-						if(newDist < minDist){
-							minDist = newDist;
-							closest = neighborSeg;
+			if(segment.size()<10000){				
+//				System.out.println("get neighboring segments...");
+				try{
+//				System.out.println("Edges to check: "+c.getEdgeMap().get(segment).size());
+//				System.out.println("Segment size: "+segment.size());
+				HashMap<HashSet<Integer>, Integer[]> neighborSegs = getNeighborSegs(c.getEdgeMap().get(segment), c.getSegmentMap());
+	//			if(c.getCentroidMap().containsKey(segment)){
+//				System.out.println("check centroid distances...");
+					Color segCentr = c.getCentroidMap().get(segment);
+					double minDist = Double.MAX_VALUE;
+					HashSet<Integer> closest = null;
+					for (HashSet<Integer> neighborSeg : neighborSegs.keySet()) {
+	//					if(c.getCentroidMap().containsKey(neighborSeg)){
+						try{
+							Color neighCentr = c.getCentroidMap().get(neighborSeg);
+							//				if(!neighCentr.equals(null)){
+							double newDist = eu.getRGBEuclid(segCentr, neighCentr);
+							if(newDist < minDist){
+								minDist = newDist;
+								closest = neighborSeg;
+								//					}
+							}
+						}catch(Exception e){
+						}
 	//					}
-						}
-//					}
-				}
-				if(minDist<threshold){
-//					System.out.println("Centroid merge!");
-					if(segment.size()>closest.size()){
-						c.getNeighborArray()[neighborSegs.get(closest)[1]] = neighborSegs.get(closest)[0];
-						updateArray(c.getNeighborArray(), closest, segment, c.getSegmentMap(), neighborSegs.get(closest)[1]);
-						for (Integer integer : closest) {
-							segment.add(integer);
-							c.getSegmentMap().set(integer, segment);
-						}
-					}else{
-						c.getNeighborArray()[neighborSegs.get(closest)[0]] = neighborSegs.get(closest)[1];
-						updateArray(c.getNeighborArray(), segment, closest, c.getSegmentMap(), neighborSegs.get(closest)[0]);
-						for (Integer integer : segment) {
-							closest.add(integer);
-							c.getSegmentMap().set(integer, closest);
+					}
+					if(minDist<threshold){
+//						System.out.println("found near enough, merge centroids");
+	//					System.out.println("Centroid merge!");
+						if(segment.size()>closest.size()){
+							c.getNeighborArray()[neighborSegs.get(closest)[1]] = neighborSegs.get(closest)[0];
+							updateArray(c.getNeighborArray(), closest, segment, c.getSegmentMap(), neighborSegs.get(closest)[1]);
+							for (Integer integer : closest) {
+								segment.add(integer);
+								c.getSegmentMap().set(integer, segment);
+							}
+						}else{
+							c.getNeighborArray()[neighborSegs.get(closest)[0]] = neighborSegs.get(closest)[1];
+							updateArray(c.getNeighborArray(), segment, closest, c.getSegmentMap(), neighborSegs.get(closest)[0]);
+							for (Integer integer : segment) {
+								closest.add(integer);
+								c.getSegmentMap().set(integer, closest);
+							}
 						}
 					}
+				}catch(Exception e){
 				}
-			}catch(Exception e){
 			}
 		}
 	}
 	
-	public HashMap<HashSet<Integer>, Integer[]> getNeighborSegs(HashSet<Integer> segment, ArrayList<HashSet<Integer>> toSeg){
+	public HashMap<HashSet<Integer>, Integer[]> getNeighborSegs(HashSet<Integer> edges, ArrayList<HashSet<Integer>> toSeg){
 		HashMap<HashSet<Integer>, Integer[]> neighborSegs = new HashMap<HashSet<Integer>, Integer[]>();
-		for (Integer pixel : segment) {
+		HashSet<HashSet<Integer>> foundNeighs = new HashSet<HashSet<Integer>>();
+		for (Integer pixel : edges) {
 			List<Integer> neighbors = eu.getNeighborNumbers(pixel);
 			for (Integer neighbor : neighbors) {
 				HashSet<Integer> neighborSeg = toSeg.get(neighbor);
-				if(!neighborSeg.equals(segment)){
+				if(!neighborSeg.equals(edges) && !foundNeighs.contains(neighborSeg)){
 					neighborSegs.put(neighborSeg, new Integer[]{pixel, neighbor});
+					foundNeighs.add(neighborSeg);
+					break;
 				}
 //				break;
 			}
@@ -171,6 +185,8 @@ public class SegmentHandler {
 		return 0;
 	}
 	
+	public void mergeToBestNeighbor()
+	
 	public void mergeToNeighbor(int[] neighborArray, HashSet<Integer> segment, List<HashSet<Integer>>segments, ArrayList<HashSet<Integer>> toSeg){
 		Integer pixel = getRandomEdge(neighborArray, segment, toSeg);
 		List<Integer> neighbors = eu.getNeighborNumbers(pixel);
@@ -197,23 +213,23 @@ public class SegmentHandler {
 	
 	
 	public void updateArray(int[] geneArray, HashSet<Integer> segment, HashSet<Integer> neighSeg, ArrayList<HashSet<Integer>> toSeg, int startPoint) {
-		HashMap<Integer, Integer> visited = new HashMap<Integer, Integer>();
-		for (Integer index : segment) {
-			visited.put(index, -1);
-		}
+		HashSet<Integer> visited = new HashSet<Integer>();
+//		for (Integer index : segment) {
+//			visited.add(index);
+//		}
 		int current = startPoint;
 		List<Integer> open = new ArrayList<Integer>();
 		open.add(current);
 		List<Integer> neighbors;
 		while (!open.isEmpty()) {
 			current = open.remove(0);
-			visited.put(current, 1);
+			visited.add(current);
 			neighbors = this.eu.getNeighborNumbers(current);
 			for (Integer neighbor : neighbors) {
-				if (visited.containsKey(neighbor) && visited.get(neighbor) != 1) {
+				if (!visited.contains(neighbor) && toSeg.get(neighbor).equals(segment)) { // && visited.get(neighbor) != 1
 					geneArray[neighbor] = current;
 					open.add(neighbor);
-					visited.put(neighbor, 1);
+					visited.add(neighbor);
 				}
 			}
 		}
